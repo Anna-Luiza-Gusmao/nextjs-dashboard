@@ -8,6 +8,7 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
+// import { revenue } from './placeholder-data'
 
 export async function fetchRevenue() {
   try {
@@ -27,6 +28,28 @@ export async function fetchRevenue() {
     throw new Error('Failed to fetch revenue data.');
   }
 }
+
+const updateRevenueTable = async (data: Revenue[]) => {
+  try {
+    // Deletar todos os dados antigos da tabela Revenue
+    await sql`DELETE FROM Revenue`;
+
+    // Inserir novos dados
+    for (const { month, revenue } of data) {
+      await sql`
+        INSERT INTO Revenue (month, revenue)
+        VALUES (${month}, ${revenue})
+      `;
+    }
+    console.log('Revenue data updated successfully');
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to update revenue data.');
+  }
+}
+
+// Atualiza os valores da tabela Revenue
+// updateRevenueTable(revenue)
 
 export async function fetchLatestInvoices() {
   try {
