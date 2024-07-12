@@ -63,9 +63,9 @@ export async function createInvoice(prevState: State, formData: FormData) {
     }
 
     // Atualiza os dados exibidos na rota de faturas, limpando o cache e disparando uma nova solicitação para o servidor
-    revalidatePath('/dashboard/invoices')
+    revalidatePath('/dashboard/faturas')
 
-    redirect('/dashboard/invoices')
+    redirect('/dashboard/faturas')
 
     // Test it out:
     // console.log(typeof rawFormData.amount)
@@ -109,8 +109,8 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
         }
     }
 
-    revalidatePath('/dashboard/invoices')
-    redirect('/dashboard/invoices')
+    revalidatePath('/dashboard/faturas')
+    redirect('/dashboard/faturas')
 }
 
 export async function deleteInvoice(id: string) {
@@ -118,7 +118,7 @@ export async function deleteInvoice(id: string) {
 
     try {
         await sql`DELETE FROM invoices WHERE id = ${id}`
-        revalidatePath('/dashboard/invoices')
+        revalidatePath('/dashboard/faturas')
         return { message: 'Deleted Invoice.' }
     } catch (error) {
         return {
@@ -142,9 +142,9 @@ export async function authenticate(
         if (error instanceof AuthError) {
             switch (error.type) {
                 case 'CredentialsSignin':
-                    return 'Invalid credentials.'
+                    return 'E-mail ou senha inválida.'
                 default:
-                    return 'Something went wrong.'
+                    return 'Algo está errado. Tente novamente.'
             }
         }
         throw error

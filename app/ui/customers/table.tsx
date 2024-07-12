@@ -1,12 +1,12 @@
 import Image from "next/image"
 import Search from "@/app/ui/search"
-import { lusitana } from "../fonts"
+import { inter } from "../fonts"
 import { CustomersTableType, FormattedCustomersTable } from "@/app/lib/definitions"
 
 export default async function CustomersTable({ customers }: { customers: FormattedCustomersTable[] }) {
 	return (
 		<div className="w-full">
-			<h1 className={`${lusitana.className} mb-8 text-xl md:text-2xl`}>Customers</h1>
+			<h1 className={`${inter.className} mb-8 text-xl md:text-2xl`}>Clientes</h1>
 			<Search placeholder="Search customers..." />
 			<div className="mt-6 flow-root">
 				<div className="overflow-x-auto">
@@ -43,7 +43,7 @@ export default async function CustomersTable({ customers }: { customers: Formatt
 											</div>
 										</div>
 										<div className="pt-4 text-sm">
-											<p>{customer.total_invoices} invoices</p>
+											<p>{customer.total_invoices} faturas</p>
 										</div>
 									</div>
 								))}
@@ -52,19 +52,19 @@ export default async function CustomersTable({ customers }: { customers: Formatt
 								<thead className="rounded-md bg-gray-50 text-left text-sm font-normal">
 									<tr>
 										<th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-											Name
+											Cliente
 										</th>
 										<th scope="col" className="px-3 py-5 font-medium">
-											Email
+											E-mail
 										</th>
 										<th scope="col" className="px-3 py-5 font-medium">
-											Total Invoices
+											Faturas Totais
 										</th>
 										<th scope="col" className="px-3 py-5 font-medium">
-											Total Pending
+											Faturas Pendentes
 										</th>
 										<th scope="col" className="px-4 py-5 font-medium">
-											Total Paid
+											Faturas Pagas
 										</th>
 									</tr>
 								</thead>
