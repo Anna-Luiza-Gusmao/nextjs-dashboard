@@ -10,14 +10,23 @@ export const metadata: Metadata = {
 	title: "Customers"
 }
 
-export default async function Page() {
-	const filteredCustomers = await fetchFilteredCustomers("")
+export default async function Page({
+	searchParams
+}: {
+	searchParams?: {
+		query?: string
+	}
+}) {
+	const query = searchParams?.query || ""
+	const filteredCustomers = await fetchFilteredCustomers(query)
 
 	return (
 		<div className="w-full">
-			<h1 className={`${inter.className} mb-8 text-xl md:text-2xl`}>Clientes</h1>
+			<div className="flex w-full items-center justify-between">
+				<h1 className={`${inter.className} mb-8 text-xl md:text-2xl`}>Clientes</h1>
+			</div>
 			<Search placeholder="Procure os clientes..." />
-			<Suspense fallback={<CustomersTableSkeleton />}>
+			<Suspense key={query} fallback={<CustomersTableSkeleton />}>
 				<CustomersTable customers={filteredCustomers} />
 			</Suspense>
 		</div>
