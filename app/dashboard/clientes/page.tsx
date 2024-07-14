@@ -1,6 +1,7 @@
-import { fetchCustomers, fetchFilteredCustomers } from "@/app/lib/data"
+import { fetchCustomers, fetchCustomersPages, fetchFilteredCustomers } from "@/app/lib/data"
 import CustomersTable from "@/app/ui/customers/table"
 import { inter } from "@/app/ui/fonts"
+import Pagination from "@/app/ui/invoices/pagination"
 import Search from "@/app/ui/search"
 import { CustomersTableSkeleton } from "@/app/ui/skeletons"
 import { Metadata } from "next"
@@ -15,10 +16,14 @@ export default async function Page({
 }: {
 	searchParams?: {
 		query?: string
+		page?: string
 	}
 }) {
 	const query = searchParams?.query || ""
-	const filteredCustomers = await fetchFilteredCustomers(query)
+	const currentPage = Number(searchParams?.page) || 1
+
+	const totalPages = await fetchCustomersPages(query)
+	const filteredCustomers = await fetchFilteredCustomers(query, currentPage)
 
 	return (
 		<div className="w-full">
@@ -29,6 +34,9 @@ export default async function Page({
 			<Suspense key={query} fallback={<CustomersTableSkeleton />}>
 				<CustomersTable customers={filteredCustomers} />
 			</Suspense>
+			<div className="mt-5 flex w-full justify-center">
+				<Pagination totalPages={totalPages} />
+			</div>
 		</div>
 	)
 }
