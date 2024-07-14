@@ -1,9 +1,9 @@
 import Image from "next/image"
-import Search from "@/app/ui/search"
-import { inter } from "../fonts"
-import { CustomersTableType, FormattedCustomersTable } from "@/app/lib/definitions"
+import { fetchFilteredCustomers } from "@/app/lib/data"
 
-export default async function CustomersTable({ customers }: { customers: FormattedCustomersTable[] }) {
+export default async function CustomersTable({ query, currentPage }: { query: string; currentPage: number }) {
+	const customers = await fetchFilteredCustomers(query, currentPage)
+
 	return (
 		<div className="mt-6 flow-root">
 			<div className="overflow-x-auto">
