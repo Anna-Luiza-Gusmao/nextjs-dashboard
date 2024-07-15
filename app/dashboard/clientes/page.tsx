@@ -1,7 +1,8 @@
 import { fetchCustomersPages } from "@/app/lib/data"
+import { CreateCustomer } from "@/app/ui/customers/buttons"
 import CustomersTable from "@/app/ui/customers/table"
 import { inter } from "@/app/ui/fonts"
-import Pagination from "@/app/ui/invoices/pagination"
+import Pagination from "@/app/ui/pagination"
 import Search from "@/app/ui/search"
 import { CustomersTableSkeleton } from "@/app/ui/skeletons"
 import { Metadata } from "next"
@@ -27,9 +28,12 @@ export default async function Page({
 	return (
 		<div className="w-full">
 			<div className="flex w-full items-center justify-between">
-				<h1 className={`${inter.className} mb-8 text-xl md:text-2xl`}>Clientes</h1>
+				<h1 className={`${inter.className} text-2xl`}>Clientes</h1>
 			</div>
-			<Search placeholder="Procure os clientes..." />
+			<div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+				<Search placeholder="Procure os clientes..." />
+				<CreateCustomer />
+			</div>
 			<Suspense key={query} fallback={<CustomersTableSkeleton />}>
 				<CustomersTable query={query} currentPage={currentPage} />
 			</Suspense>
