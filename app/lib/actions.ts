@@ -5,21 +5,21 @@ import { sql } from '@vercel/postgres'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-const FormSchema = z.object({
+const InvoiceFormSchema = z.object({
     id: z.string(),
     customerId: z.string({
-        invalid_type_error: 'Please select a customer.',
+        invalid_type_error: 'Selecione um cliente.',
     }),
     amount: z.coerce
         .number()
-        .gt(0, { message: 'Please enter an amount greater than $0.' }),
+        .gt(0, { message: 'Entre com um valor maior do que R$0,00.' }),
     status: z.enum(['pending', 'paid'], {
-        invalid_type_error: 'Please select an invoice status.',
+        invalid_type_error: 'Selecione um status para a nova fatura.',
     }),
     date: z.string(),
 })
 
-const CreateInvoice = FormSchema.omit({ id: true, date: true })
+const CreateInvoice = InvoiceFormSchema.omit({ id: true, date: true })
 
 export type State = {
     errors?: {
@@ -42,7 +42,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
     if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
-            message: 'Missing Fields. Failed to Create Invoice.',
+            message: 'Algo está errado, não foi possível criar uma nova fatura.',
         }
     }
 
@@ -73,7 +73,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
 }
 
 // Use Zod to update the expected types
-const UpdateInvoice = FormSchema.omit({ id: true, date: true })
+const UpdateInvoice = InvoiceFormSchema.omit({ id: true, date: true })
 
 // ...
 
@@ -150,3 +150,78 @@ export async function authenticate(
         throw error
     }
 }
+
+const customerPhotoSchema = z.object({
+    name: z.string(),
+    size: z.number().max(5 * 1024 * 1024), // maximum size of 5MB
+    type: z.enum(['image/jpeg', 'image/png', 'image/jpg']) // allowed file types
+})
+
+const CustomerFormSchema = z.object({
+    id: z.string(),
+    customerName: z.string().min(2, {
+        message: "Digite no mínimo 2 caracteres para o nome do cliente."
+    }),
+    customerPhoto: customerPhotoSchema,
+    customerEmail: z.string().email({
+        message: 'Endereço de e-mail inválido.',
+    }),
+    date: z.string()
+})
+
+const CreateCustomer = CustomerFormSchema.omit({ id: true, date: true })
+
+export type CustomerState = {
+    errors?: {
+        customerName?: string[]
+        customerPhoto?: string[]
+        customerEmail?: string[]
+    }
+    message?: string | null
+}
+
+export async function createCustomer(prevState: CustomerState, formData: FormData) {
+    // Validate form fields using Zod
+    const validatedFields = CreateCustomer.safeParse({
+        customerName: formData.get('customerName'),
+        customerPhoto: formData.get('customerPhoto'),
+        customerEmail: formData.get('customerEmail'),
+    })
+
+    // If form validation fails, return errors early. Otherwise, continue.
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Algo está errado, não foi possível criar um novo cliente.',
+        }
+    }
+
+    // Prepare data for insertion into the database
+    const { customerName, customerPhoto, customerEmail } = validatedFields.data
+
+    try {
+        await sql`
+          INSERT INTO customers (name, email, image_url)
+          VALUES (${customerName}, ${customerEmail}, ${customerPhoto.name})
+        `
+    } catch (error) {
+        return {
+            message: `Database Error: Failed to Create Customer. ${error}`,
+        }
+    }
+
+    revalidatePath('/dashboard/clientes')
+    redirect('/dashboard/clientes')
+}
+
+// export async function deleteCustomer(id: string) {
+//     try {
+//         await sql`DELETE FROM customers WHERE id = ${id}`
+//         revalidatePath('/dashboard/clientes')
+//         return { message: 'Deleted Customer.' }
+//     } catch (error) {
+//         return {
+//             message: 'Database Error: Failed to Delete Customer.',
+//         }
+//     }
+// }
