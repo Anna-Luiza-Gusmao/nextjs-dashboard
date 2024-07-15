@@ -202,7 +202,7 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
     try {
         await sql`
           INSERT INTO customers (name, email, image_url)
-          VALUES (${customerName}, ${customerEmail}, ${customerPhoto.name})
+          VALUES (${customerName}, ${customerEmail}, ${`/customers/${customerPhoto.name}`})
         `
     } catch (error) {
         return {
