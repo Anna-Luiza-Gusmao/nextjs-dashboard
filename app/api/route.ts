@@ -1,8 +1,8 @@
-import { NextApiHandler, NextApiRequest } from "next"
 import formidable from "formidable"
 import path from "path"
 import fs from "fs/promises"
 import { v4 as uuidv4 } from "uuid"
+import { NextResponse } from "next/server"
 
 export const config = {
     api: {
@@ -11,7 +11,7 @@ export const config = {
 }
 
 const readFile = (
-    req: NextApiRequest, saveLocally?: boolean
+    req: Response, saveLocally?: boolean
 ): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
     const options: formidable.Options = {}
     if (saveLocally) {
@@ -32,7 +32,7 @@ const readFile = (
     })
 }
 
-const handler: NextApiHandler = async (req, res) => {
+export async function POST(request: Response) {
     const pathToCustomersImages = path.join(process.cwd(), "/public", "customers")
 
     try {
@@ -43,13 +43,7 @@ const handler: NextApiHandler = async (req, res) => {
         await fs.mkdir(pathToCustomersImages)
     }
 
-    try {
-        const { files } = await readFile(req, true)
-        console.log("arquivos: ", files)
-        // res.json({ filePath: `/customers/${fileName}` });
-    } catch (error) {
-        res.status(500).json({ message: "Erro ao fazer upload da imagem para a pasta public." })
-    }
-}
+    await readFile(request, true)
 
-export default handler
+    return NextResponse.json({ message: "Image created in public folder successfully." }, { status: 200 })
+}

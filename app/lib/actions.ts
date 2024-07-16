@@ -129,7 +129,6 @@ export async function deleteInvoice(id: string) {
 
 import { signIn } from '@/auth'
 import { AuthError } from 'next-auth'
-import { api } from './axios'
 
 // ...
 
@@ -198,38 +197,39 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
 
     // Prepare data for insertion into the database
     const { customerName, customerPhoto, customerEmail } = validatedFields.data
+
     const photoFile = customerPhoto as File
+    const imageFormData = new FormData()
+    imageFormData.append("file", photoFile)
 
-    if (photoFile) {
-        const imageFormData = new FormData()
-        imageFormData.append("file", photoFile)
+    try {
+        // Insert customer image to public folder
+        await fetch("/api", {
+            method: "POST",
+            body: imageFormData
+        })
+            .then(response => response.json())
+            .then(data => {
+                const imagePath = data.filePath
+                console.log("Image path ", imagePath)
 
-        try {
-            // Insert customer image to public folder
-            const { data } = await api.post("/api/uploadImage", imageFormData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            })
-            const imagePath = data.filePath
-
-            try {
-                // await sql`
-                //   INSERT INTO customers (name, email, image_url)
-                //   VALUES (${customerName}, ${customerEmail}, ${`/customers/${imagePath}`})
-                // `
-            } catch (error) {
-                return {
-                    message: `Database Error: Failed to Create Customer. ${error}`,
+                try {
+                    // await sql`
+                    //   INSERT INTO customers (name, email, image_url)
+                    //   VALUES (${customerName}, ${customerEmail}, ${`/customers/${imagePath}`})
+                    // `
+                } catch (error) {
+                    return {
+                        message: `Database Error: Failed to Create Customer. ${error}`,
+                    }
                 }
-            }
-        } catch (error) {
-            console.error("Erro na requisição com o axios: ", error)
-        }
+            })
+    } catch (error) {
+        console.error("Error in request with api: ", error)
     }
 
-    revalidatePath('/dashboard/clientes')
-    redirect('/dashboard/clientes')
+    revalidatePath("/dashboard/clientes")
+    redirect("/dashboard/clientes")
 }
 
 // export async function deleteCustomer(id: string) {
