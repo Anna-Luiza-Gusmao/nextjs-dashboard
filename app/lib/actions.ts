@@ -129,6 +129,7 @@ export async function deleteInvoice(id: string) {
 
 import { signIn } from '@/auth'
 import { AuthError } from 'next-auth'
+import { api } from './axios'
 
 // ...
 
@@ -165,11 +166,10 @@ const CustomerFormSchema = z.object({
     customerPhoto: customerPhotoSchema,
     customerEmail: z.string().email({
         message: 'Endereço de e-mail inválido.',
-    }),
-    date: z.string()
+    })
 })
 
-const CreateCustomer = CustomerFormSchema.omit({ id: true, date: true })
+const CreateCustomer = CustomerFormSchema.omit({ id: true })
 
 export type CustomerState = {
     errors?: {
@@ -198,15 +198,33 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
 
     // Prepare data for insertion into the database
     const { customerName, customerPhoto, customerEmail } = validatedFields.data
+    const photoFile = customerPhoto as File
 
-    try {
-        await sql`
-          INSERT INTO customers (name, email, image_url)
-          VALUES (${customerName}, ${customerEmail}, ${`/customers/${customerPhoto.name}`})
-        `
-    } catch (error) {
-        return {
-            message: `Database Error: Failed to Create Customer. ${error}`,
+    if (photoFile) {
+        const imageFormData = new FormData()
+        imageFormData.append("file", photoFile)
+
+        try {
+            // Insert customer image to public folder
+            const { data } = await api.post("/api/uploadImage", imageFormData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
+            const imagePath = data.filePath
+
+            try {
+                // await sql`
+                //   INSERT INTO customers (name, email, image_url)
+                //   VALUES (${customerName}, ${customerEmail}, ${`/customers/${imagePath}`})
+                // `
+            } catch (error) {
+                return {
+                    message: `Database Error: Failed to Create Customer. ${error}`,
+                }
+            }
+        } catch (error) {
+            console.error("Erro na requisição com o axios: ", error)
         }
     }
 
