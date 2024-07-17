@@ -202,28 +202,39 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
     const imageFormData = new FormData()
     imageFormData.append("file", photoFile)
 
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+
     try {
         // Insert customer image to public folder
-        await fetch("/api", {
+        const response = await fetch(`${apiBaseUrl}/api/upload`, {
             method: "POST",
-            body: imageFormData
+            body: imageFormData,
         })
-            .then(response => response.json())
-            .then(data => {
-                const imagePath = data.filePath
-                console.log("Image path ", imagePath)
 
-                try {
-                    // await sql`
-                    //   INSERT INTO customers (name, email, image_url)
-                    //   VALUES (${customerName}, ${customerEmail}, ${`/customers/${imagePath}`})
-                    // `
-                } catch (error) {
-                    return {
-                        message: `Database Error: Failed to Create Customer. ${error}`,
-                    }
-                }
-            })
+        if (!response.ok) {
+            console.error("API response not OK: ", response.status, response.statusText)
+            throw new Error(`API Error: ${response.status} ${response.statusText}`)
+        }
+
+        const data = await response.json().catch((error) => {
+            console.error("Error parsing JSON response: ", error)
+            throw new Error("Invalid JSON response")
+        })
+
+        const imagePath = data
+        console.log("Image path ", imagePath)
+
+        try {
+            // await sql`
+            //   INSERT INTO customers (name, email, image_url)
+            //   VALUES (${customerName}, ${customerEmail}, ${`/customers/${imagePath}`})
+            // `
+        } catch (error) {
+            console.error("Database Error: Failed to Create Customer. ", error)
+            return {
+                message: `Database Error: Failed to Create Customer. ${error}`,
+            }
+        }
     } catch (error) {
         console.error("Error in request with api: ", error)
     }
