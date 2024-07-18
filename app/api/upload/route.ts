@@ -1,40 +1,26 @@
-import formidable from "formidable"
 import path from "path"
 import fs from "fs/promises"
 import { v4 as uuidv4 } from "uuid"
 import { NextRequest, NextResponse } from "next/server"
 
-export const config = {
-    api: {
-        bodyParser: false
-    }
-}
-
-// const readFile = (
-//     req: NextRequest, saveLocally?: boolean
-// ): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
-//     const options: formidable.Options = {}
-//     if (saveLocally) {
-//         options.uploadDir = path.join(process.cwd(), "public/customers")
-//         options.filename = (name, ext, path, form) => {
-//             const uniqueId = uuidv4()
-//             const fileName = `${uniqueId}-${path.originalFilename}`
-//             return fileName
-//         }
-//     }
-
-//     const form = formidable()
-
-//     return new Promise((resolve, reject) => {
-//         form.parse(req.nextRequest, (err, fields, files) => {
-//             if (err) return reject(err)
-//             resolve({ fields, files })
-//         })
-//     })
-// }
-
 export async function POST(request: NextRequest) {
-    const pathToCustomersImages = path.join(process.cwd(), "/public", "customers")
+    const formData = await request.formData()
+
+    const file: File | null = formData.get("file") as File
+    if (!file) {
+        return NextResponse.json(
+            { error: "No file updated." },
+            { status: 400 }
+        )
+    }
+
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    const uniqueId = uuidv4()
+    const fileName = `${uniqueId}-${file.name}`
+    const filePath = path.join(process.cwd(), 'public', 'customers', fileName)
+
+    const pathToCustomersImages = path.join(process.cwd(), "public", "customers")
 
     try {
         // Read the contents of the directory specified
@@ -44,8 +30,11 @@ export async function POST(request: NextRequest) {
         await fs.mkdir(pathToCustomersImages)
     }
 
+    // Save the file
+    await fs.writeFile(filePath, buffer)
+
     return NextResponse.json(
-        { message: "Image created in public folder successfully." },
+        { message: "Image created in public folder successfully.", fileName },
         { status: 200 }
     )
 }

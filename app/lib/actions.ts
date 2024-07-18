@@ -151,18 +151,19 @@ export async function authenticate(
     }
 }
 
-const customerPhotoSchema = z.object({
-    name: z.string(),
-    size: z.number().max(5 * 1024 * 1024), // maximum size of 5MB
-    type: z.enum(['image/jpeg', 'image/png', 'image/jpg']) // allowed file types
-})
-
 const CustomerFormSchema = z.object({
     id: z.string(),
     customerName: z.string().min(2, {
         message: "Digite no mínimo 2 caracteres para o nome do cliente."
     }),
-    customerPhoto: customerPhotoSchema,
+    customerPhoto: z
+        .instanceof(File)
+        .refine((file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+            message: 'Tipo de arquivo inválido. Apenas arquivos JPEG, PNG, and JPG são permitidos.',
+        })
+        .refine((file) => file.size <= 5 * 1024 * 1024, {
+            message: 'O tamanho do arquivo deve ser menor que 5MB.',
+        }),
     customerEmail: z.string().email({
         message: 'Endereço de e-mail inválido.',
     })
@@ -198,9 +199,8 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
     // Prepare data for insertion into the database
     const { customerName, customerPhoto, customerEmail } = validatedFields.data
 
-    const photoFile = customerPhoto as File
     const imageFormData = new FormData()
-    imageFormData.append("file", photoFile)
+    imageFormData.append("file", customerPhoto)
 
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
 
@@ -208,7 +208,7 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
         // Insert customer image to public folder
         const response = await fetch(`${apiBaseUrl}/api/upload`, {
             method: "POST",
-            body: imageFormData,
+            body: imageFormData
         })
 
         if (!response.ok) {
@@ -222,13 +222,12 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
         })
 
         const imagePath = data
-        console.log("Image path ", imagePath)
 
         try {
-            // await sql`
-            //   INSERT INTO customers (name, email, image_url)
-            //   VALUES (${customerName}, ${customerEmail}, ${`/customers/${imagePath}`})
-            // `
+            await sql`
+              INSERT INTO customers (name, email, image_url)
+              VALUES (${customerName}, ${customerEmail}, ${`/customers/${imagePath.fileName}`})
+            `
         } catch (error) {
             console.error("Database Error: Failed to Create Customer. ", error)
             return {
