@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { fetchFilteredCustomers } from "@/app/lib/data"
+import { DeleteCustomer } from "./buttons";
 
 export default async function CustomersTable({ query, currentPage }: { query: string; currentPage: number }) {
 	const customers = await fetchFilteredCustomers(query, currentPage)
@@ -27,6 +28,12 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 												</div>
 											</div>
 											<p className="text-sm text-gray-500">{customer.email}</p>
+										</div>
+										<div>
+											<DeleteCustomer
+												id={customer.id}
+												fileName={customer.image_url}
+											/>
 										</div>
 									</div>
 									<div className="flex w-full items-center justify-between border-b py-5">
@@ -63,6 +70,9 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 									<th scope="col" className="px-4 py-5 font-medium">
 										Faturas Pagas
 									</th>
+									<th scope="col" className="relative py-3 pl-6 pr-3">
+										<span className="sr-only">Edit</span>
+									</th>
 								</tr>
 							</thead>
 
@@ -92,6 +102,14 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 										</td>
 										<td className="whitespace-nowrap bg-white px-4 py-5 text-sm group-first-of-type:rounded-md group-last-of-type:rounded-md">
 											{customer.total_paid}
+										</td>
+										<td className="whitespace-nowrap py-3 pl-6 pr-3">
+											<div className="flex justify-end gap-3">
+												<DeleteCustomer
+													id={customer.id}
+													fileName={customer.image_url}
+												/>
+											</div>
 										</td>
 									</tr>
 								))}

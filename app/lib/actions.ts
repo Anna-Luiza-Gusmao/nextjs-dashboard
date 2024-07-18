@@ -151,6 +151,8 @@ export async function authenticate(
     }
 }
 
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+
 const CustomerFormSchema = z.object({
     id: z.string(),
     customerName: z.string().min(2, {
@@ -202,8 +204,6 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
     const imageFormData = new FormData()
     imageFormData.append("file", customerPhoto)
 
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
-
     try {
         // Insert customer image to public folder
         const response = await fetch(`${apiBaseUrl}/api/upload`, {
@@ -242,14 +242,26 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
     redirect("/dashboard/clientes")
 }
 
-// export async function deleteCustomer(id: string) {
-//     try {
-//         await sql`DELETE FROM customers WHERE id = ${id}`
-//         revalidatePath('/dashboard/clientes')
-//         return { message: 'Deleted Customer.' }
-//     } catch (error) {
-//         return {
-//             message: 'Database Error: Failed to Delete Customer.',
-//         }
-//     }
-// }
+export async function deleteCustomer(id: string, fileName: string) {
+    try {
+        const response = await fetch(`${apiBaseUrl}/api/upload`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ fileName })
+        })
+
+        if (!response.ok) {
+            throw new Error(`Failed to delete file: ${response.status} ${response.statusText}`)
+        }
+
+        await sql`DELETE FROM customers WHERE id = ${id}`
+        revalidatePath('/dashboard/clientes')
+        return { message: 'Deleted Customer.' }
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Delete Customer.',
+        }
+    }
+}

@@ -38,3 +38,16 @@ export async function POST(request: NextRequest) {
         { status: 200 }
     )
 }
+
+export async function DELETE(request: NextRequest) {
+    const { fileName } = await request.json()
+    const filePath = path.join(process.cwd(), "public", fileName)
+
+    try {
+        await fs.unlink(filePath)
+        return NextResponse.json({ message: "File deleted successfully." }, { status: 200 })
+    } catch (error) {
+        console.error("Error deleting file:", error);
+        return NextResponse.json({ error: "The customer image cannot be removed." }, { status: 400 })
+    }
+}
