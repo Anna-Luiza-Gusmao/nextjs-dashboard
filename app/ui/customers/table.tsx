@@ -29,7 +29,7 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 											</div>
 											<p className="text-sm text-gray-500">{customer.email}</p>
 										</div>
-										<div>
+										<div className="flex justify-end gap-2">
 											<UpdateCustomer id={customer.id} />
 											<DeleteCustomer
 												id={customer.id}
