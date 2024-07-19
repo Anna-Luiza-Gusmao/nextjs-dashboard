@@ -18,17 +18,17 @@ export default function EditCustomerForm({ customer }: { customer: CustomerForm 
 		<form action={formAction}>
 			<div className="rounded-md bg-gray-50 p-4 md:p-6">
 				{/* Customer name */}
-				<div className="w-full flex items-center gap-6 mb-4">
+				<div className="w-full flex flex-col items-center gap-4 mb-4 sm:flex-row sm:gap-6">
 					<div className="flex items-center gap-3">
 						<Image
 							src={customer.image_url}
-							className="rounded-full"
+							className="rounded-full w-28 h-28 sm:w-16 sm:h-16"
 							alt={`${customer.name}'s profile picture`}
 							width={64}
 							height={64}
 						/>
 					</div>
-					<section className="flex-1">
+					<section className="w-full flex-1">
 						<label htmlFor="customerName" className="mb-2 block text-sm font-medium">
 							Digite o nome do cliente
 						</label>
