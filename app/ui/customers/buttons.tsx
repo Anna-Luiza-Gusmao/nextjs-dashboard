@@ -1,5 +1,5 @@
 import { deleteCustomer } from "@/app/lib/actions"
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline"
+import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
 
 export function CreateCustomer() {
@@ -23,5 +23,13 @@ export function DeleteCustomer({ id, fileName }: { id: string; fileName: string 
 				<TrashIcon className="w-4" />
 			</button>
 		</form>
+	)
+}
+
+export function UpdateCustomer({ id }: { id: string }) {
+	return (
+		<Link href={`/dashboard/clientes/${id}/editar`} className="rounded-md border p-2 hover:bg-gray-100">
+			<PencilIcon className="w-5" />
+		</Link>
 	)
 }
