@@ -266,9 +266,31 @@ export async function deleteCustomer(id: string, fileName: string) {
     }
 }
 
-export async function updateCustomer(id: string, prevState: CustomerState, formData: FormData) {
+const UpdatedCustomerFormSchema = z.object({
+    id: z.string(),
+    customerName: z.string().min(2, {
+        message: "Digite no mínimo 2 caracteres para o nome do cliente."
+    }),
+    customerPhoto: z
+        .optional(
+            z.instanceof(File)
+                .refine((file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+                    message: 'Tipo de arquivo inválido. Apenas arquivos JPEG, PNG, and JPG são permitidos.',
+                })
+                .refine((file) => file.size <= 5 * 1024 * 1024, {
+                    message: 'O tamanho do arquivo deve ser menor que 5MB.',
+                }),
+        ),
+    customerEmail: z.string().email({
+        message: 'Endereço de e-mail inválido.',
+    })
+})
+
+const UpdateCustomer = UpdatedCustomerFormSchema.omit({ id: true })
+
+export async function updateCustomer(id: string, oldCustomerImage: string, prevState: CustomerState, formData: FormData) {
     // Validate form fields using Zod
-    const validatedFields = CreateCustomer.safeParse({
+    const validatedFields = UpdateCustomer.safeParse({
         customerName: formData.get('customerName'),
         customerPhoto: formData.get('customerPhoto'),
         customerEmail: formData.get('customerEmail'),
@@ -285,32 +307,11 @@ export async function updateCustomer(id: string, prevState: CustomerState, formD
     // Prepare data for insertion into the database
     const { customerName, customerPhoto, customerEmail } = validatedFields.data
 
-    const imageFormData = new FormData()
-    imageFormData.append("file", customerPhoto)
-
-    try {
-        // Insert customer image to public folder
-        const response = await fetch(`${apiBaseUrl}/api/upload`, {
-            method: "PATCH",
-            body: imageFormData
-        })
-
-        if (!response.ok) {
-            console.error("API response not OK: ", response.status, response.statusText)
-            throw new Error(`API Error: ${response.status} ${response.statusText}`)
-        }
-
-        const data = await response.json().catch((error) => {
-            console.error("Error parsing JSON response: ", error)
-            throw new Error("Invalid JSON response")
-        })
-
-        const imagePath = data
-
+    if (customerPhoto === undefined) {
         try {
             await sql`
             UPDATE customers
-                SET name = ${customerName}, email = ${customerEmail}, image_url = ${`/customers/${imagePath.fileName}`}
+                SET name = ${customerName}, email = ${customerEmail}, image_url = ${oldCustomerImage}
                 WHERE id = ${id}
             `
         } catch (error) {
@@ -319,8 +320,45 @@ export async function updateCustomer(id: string, prevState: CustomerState, formD
                 message: `Database Error: Failed to Updated Customer. ${error}`,
             }
         }
-    } catch (error) {
-        console.error("Error in request with api: ", error)
+    } else {
+        const formData = new FormData()
+        formData.append("file", customerPhoto)
+        formData.append("oldFileName", oldCustomerImage)
+
+        try {
+            // Insert customer image to public folder
+            const response = await fetch(`${apiBaseUrl}/api/upload`, {
+                method: "PUT",
+                body: formData
+            })
+
+            if (!response.ok) {
+                console.error("API response not OK: ", response.status, response.statusText)
+                throw new Error(`API Error: ${response.status} ${response.statusText}`)
+            }
+
+            const data = await response.json().catch((error) => {
+                console.error("Error parsing JSON response: ", error)
+                throw new Error("Invalid JSON response")
+            })
+
+            const imagePath = data
+
+            try {
+                await sql`
+                UPDATE customers
+                    SET name = ${customerName}, email = ${customerEmail}, image_url = ${`/customers/${imagePath.fileName}`}
+                    WHERE id = ${id}
+                `
+            } catch (error) {
+                console.error("Database Error: Failed to Updated Customer. ", error)
+                return {
+                    message: `Database Error: Failed to Updated Customer. ${error}`,
+                }
+            }
+        } catch (error) {
+            console.error("Error in request with api: ", error)
+        }
     }
 
     revalidatePath("/dashboard/clientes")

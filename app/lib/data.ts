@@ -274,11 +274,13 @@ export async function fetchCustomerById(id: string) {
         customers.image_url
       FROM customers
       WHERE customers.id = ${id};
-    `;
+    `
 
-    return data;
+    const customer = data.rows[0]
+
+    return customer
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch customer.');
+    console.error('Database Error:', error)
+    throw new Error('Failed to fetch customer.')
   }
 }

@@ -52,12 +52,12 @@ export async function DELETE(request: NextRequest) {
     }
 }
 
-export async function PATCH(request: NextRequest) {
+export async function PUT(request: NextRequest) {
     const formData = await request.formData()
     const oldFileName = formData.get("oldFileName") as string
 
     // Delete old image
-    const oldFilePath = path.join(process.cwd(), "public", "customers", oldFileName)
+    const oldFilePath = path.join(process.cwd(), "public", oldFileName)
     try {
         await fs.unlink(oldFilePath)
     } catch (error) {
@@ -66,7 +66,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Handle new image upload
-    const file: File | null = formData.get("customerPhoto") as File
+    const file: File | null = formData.get("file") as File
     if (!file) {
         return NextResponse.json(
             { error: "No file uploaded." },

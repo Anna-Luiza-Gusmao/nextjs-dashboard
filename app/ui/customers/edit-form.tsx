@@ -1,53 +1,65 @@
 "use client"
 
-import { Customer } from "@/app/lib/definitions"
+import Image from "next/image"
+import { CustomerForm } from "@/app/lib/definitions"
 import { AtSymbolIcon, UserIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
 import { Button } from "@/app/ui/button"
 import { useActionState } from "react"
 import { CustomerState, updateCustomer } from "@/app/lib/actions"
 
-export default function EditCustomerForm({ customer }: { customer: Customer }) {
+export default function EditCustomerForm({ customer }: { customer: CustomerForm }) {
 	const initialState: CustomerState = { message: null, errors: {} }
-	const updateCustomerWithId = updateCustomer.bind(null, customer.id)
+	const updateCustomerWithId = updateCustomer.bind(null, customer.id, customer.image_url)
 	const [state, formAction] = useActionState(updateCustomerWithId, initialState)
-	const filesAllowedCustomerPhoto = "image/png, image/jpeg, image/jpg"
+	const filesAllowedCustomerPhoto = "image/png, image/jpeg, image/jpg" || null
 
 	return (
 		<form action={formAction}>
 			<div className="rounded-md bg-gray-50 p-4 md:p-6">
 				{/* Customer name */}
-				<div className="mb-4">
-					<label htmlFor="customerName" className="mb-2 block text-sm font-medium">
-						Digite o nome do cliente
-					</label>
-					<div className="relative mt-2 rounded-md">
-						<div className="relative">
-							<input
-								id="name"
-								name="customerName"
-								type="text"
-								placeholder="Digite o nome do cliente"
-								className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-								aria-describedby="name-error"
-								defaultValue={customer.name}
-							/>
-							<UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+				<div className="w-full flex items-center gap-6 mb-4">
+					<div className="flex items-center gap-3">
+						<Image
+							src={customer.image_url}
+							className="rounded-full"
+							alt={`${customer.name}'s profile picture`}
+							width={64}
+							height={64}
+						/>
+					</div>
+					<section className="flex-1">
+						<label htmlFor="customerName" className="mb-2 block text-sm font-medium">
+							Digite o nome do cliente
+						</label>
+						<div className="relative mt-2 rounded-md">
+							<div className="relative">
+								<input
+									id="name"
+									name="customerName"
+									type="text"
+									placeholder="Digite o nome do cliente"
+									className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+									aria-describedby="name-error"
+									defaultValue={customer.name}
+								/>
+								<UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+							</div>
 						</div>
-					</div>
-					<div id="name-error" aria-live="polite" aria-atomic="true">
-						{state.errors?.customerName &&
-							state.errors.customerName.map((error: string) => (
-								<p className="mt-2 text-sm text-red-500" key={error}>
-									{error}
-								</p>
-							))}
-					</div>
+						<div id="name-error" aria-live="polite" aria-atomic="true">
+							{state.errors?.customerName &&
+								state.errors.customerName.map((error: string) => (
+									<p className="mt-2 text-sm text-red-500" key={error}>
+										{error}
+									</p>
+								))}
+						</div>
+					</section>
 				</div>
 				{/* Customer photo */}
 				<div className="mb-4">
 					<label htmlFor="customerPhoto" className="mb-2 block text-sm font-medium">
-						Adicione uma imagem do cliente
+						Adicione uma nova imagem para o cliente
 					</label>
 					<div className="relative mt-2 rounded-md">
 						<div className="relative">
@@ -64,7 +76,6 @@ export default function EditCustomerForm({ customer }: { customer: Customer }) {
 									hover:file:cursor-pointer hover:file:bg-violet-400
 								"
 								aria-describedby="photo-error"
-								defaultValue={customer.image_url}
 							/>
 						</div>
 					</div>

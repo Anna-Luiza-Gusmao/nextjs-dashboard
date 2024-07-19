@@ -2,7 +2,7 @@ import Breadcrumbs from "@/app/ui/breadcrumbs"
 import { fetchCustomerById } from "@/app/lib/data"
 import { notFound } from "next/navigation"
 import { Metadata } from "next"
-import { Customer, CustomerForm } from "@/app/lib/definitions"
+import Form from "@/app/ui/customers/edit-form"
 
 export const metadata: Metadata = {
 	title: "Atualizar Cliente"
@@ -10,16 +10,11 @@ export const metadata: Metadata = {
 
 export default async function Page({ params }: { params: { id: string } }) {
 	const id = params.id
-	// async function getCustomer(id: string): Promise<{ customer: CustomerForm }> {
-	// 	const customer = await fetchCustomerById(id)
-	// 	return customer
-	// }
+	const customer = await Promise.resolve(fetchCustomerById(id))
 
-	// const customer = getCustomer(id)
-
-	// if (!customer) {
-	// 	notFound()
-	// }
+	if (!customer) {
+		notFound()
+	}
 
 	return (
 		<main>
@@ -33,7 +28,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 					}
 				]}
 			/>
-			{/* <Form /> */}
+			<Form customer={customer} />
 		</main>
 	)
 }
