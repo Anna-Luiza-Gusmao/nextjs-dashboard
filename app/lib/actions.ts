@@ -272,18 +272,16 @@ const UpdatedCustomerFormSchema = z.object({
         message: "Digite no mínimo 2 caracteres para o nome do cliente."
     }),
     customerPhoto: z
-        .optional(
-            z.instanceof(File)
-                .refine((file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
-                    message: 'Tipo de arquivo inválido. Apenas arquivos JPEG, PNG, and JPG são permitidos.',
-                })
-                .refine((file) => file.size <= 5 * 1024 * 1024, {
-                    message: 'O tamanho do arquivo deve ser menor que 5MB.',
-                }),
-        ),
+        .instanceof(File)
+        .refine((file) => ['image/jpeg', 'image/png', 'image/jpg', 'application/octet-stream'].includes(file.type), {
+            message: 'Tipo de arquivo inválido. Apenas arquivos JPEG, PNG, and JPG são permitidos.',
+        })
+        .refine((file) => file.size <= 5 * 1024 * 1024, {
+            message: 'O tamanho do arquivo deve ser menor que 5MB.',
+        }),
     customerEmail: z.string().email({
-        message: 'Endereço de e-mail inválido.',
-    })
+            message: 'Endereço de e-mail inválido.',
+        })
 })
 
 const UpdateCustomer = UpdatedCustomerFormSchema.omit({ id: true })
@@ -307,20 +305,7 @@ export async function updateCustomer(id: string, oldCustomerImage: string, prevS
     // Prepare data for insertion into the database
     const { customerName, customerPhoto, customerEmail } = validatedFields.data
 
-    if (customerPhoto === undefined) {
-        try {
-            await sql`
-            UPDATE customers
-                SET name = ${customerName}, email = ${customerEmail}, image_url = ${oldCustomerImage}
-                WHERE id = ${id}
-            `
-        } catch (error) {
-            console.error("Database Error: Failed to Updated Customer. ", error)
-            return {
-                message: `Database Error: Failed to Updated Customer. ${error}`,
-            }
-        }
-    } else {
+    if (customerPhoto.size !== 0) {
         const formData = new FormData()
         formData.append("file", customerPhoto)
         formData.append("oldFileName", oldCustomerImage)
@@ -358,6 +343,19 @@ export async function updateCustomer(id: string, oldCustomerImage: string, prevS
             }
         } catch (error) {
             console.error("Error in request with api: ", error)
+        }
+    } else {
+        try {
+            await sql`
+            UPDATE customers
+                SET name = ${customerName}, email = ${customerEmail}, image_url = ${oldCustomerImage}
+                WHERE id = ${id}
+            `
+        } catch (error) {
+            console.error("Database Error: Failed to Updated Customer. ", error)
+            return {
+                message: `Database Error: Failed to Updated Customer. ${error}`,
+            }
         }
     }
 
