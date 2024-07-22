@@ -4,7 +4,7 @@ import { deleteCustomer } from "@/app/lib/actions"
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
 import DeleteModal from "../delete-modal"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 
 export function CreateCustomer() {
 	return (
@@ -21,9 +21,9 @@ export function DeleteCustomer({ id, customerName, fileName }: { id: string; cus
 	const deleteCustomerWithId = deleteCustomer.bind(null, id, fileName)
 	const [openDeleteCustomer, setOpenDeleteCustomer] = useState(false)
 
-	const handleOpenDeleteModal = () => {
+	const handleOpenDeleteModal = useCallback(() => {
 		setOpenDeleteCustomer(true)
-	}
+	}, [openDeleteCustomer])
 
 	return (
 		<>

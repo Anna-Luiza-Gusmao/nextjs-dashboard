@@ -2,7 +2,7 @@
 
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"
 import clsx from "clsx"
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useCallback } from "react"
 
 interface IDeleteModalProps {
     title: string
@@ -21,15 +21,15 @@ export default function DeleteModal({
     setOpenDeleteModal,
     deleteAction
 }: IDeleteModalProps) {
-    const handleCancelButton = () => {
+    const handleCancelButton = useCallback(() => {
         setOpenDeleteModal(false)
-    }
+    }, [openDeleteModal])
 
     return (
-        <div className={`relative z-30 ${clsx(openDeleteModal ? "block" : "hidden")}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div className={`absolute z-30 ${clsx(openDeleteModal ? "block" : "hidden")}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
-            <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div className="fixed inset-0 z-20 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl">
                         <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
