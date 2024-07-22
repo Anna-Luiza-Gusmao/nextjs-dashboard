@@ -1,6 +1,11 @@
+"use client"
+
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
 import { deleteInvoice } from "@/app/lib/actions"
+import DeleteModal from "../delete-modal"
+import { useState } from "react"
+import { formatCurrency } from "@/app/lib/utils"
 
 export function CreateInvoice() {
 	return (
@@ -21,15 +26,28 @@ export function UpdateInvoice({ id }: { id: string }) {
 	)
 }
 
-export function DeleteInvoice({ id }: { id: string }) {
+export function DeleteInvoice({ id, customerName, invoiceValue }: { id: string; customerName: string; invoiceValue: number }) {
 	const deleteInvoiceWithId = deleteInvoice.bind(null, id)
+	const [openDeleteCustomer, setOpenDeleteCustomer] = useState(false)
+
+	const handleOpenDeleteModal = () => {
+		setOpenDeleteCustomer(true)
+	}
 
 	return (
-		<form action={deleteInvoiceWithId}>
-			<button type="submit" className="rounded-md border p-2 hover:bg-gray-100">
+		<>
+			<button type="button" className="rounded-md border p-2 hover:bg-gray-100" onClick={handleOpenDeleteModal}>
 				<span className="sr-only">Deletar</span>
 				<TrashIcon className="w-4" />
 			</button>
-		</form>
+			{openDeleteCustomer &&
+				DeleteModal({
+					title: `Deletar fatura de ${formatCurrency(invoiceValue)} de ${customerName}`,
+					description: "Tem certeza que deseja deletar permanentemente a fatura?",
+					openDeleteModal: openDeleteCustomer,
+					setOpenDeleteModal: setOpenDeleteCustomer,
+					deleteAction: deleteInvoiceWithId
+				})}
+		</>
 	)
 }
