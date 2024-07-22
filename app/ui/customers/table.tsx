@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { fetchFilteredCustomers } from "@/app/lib/data"
-import { DeleteCustomer, UpdateCustomer } from "./buttons";
+import { DeleteCustomer, UpdateCustomer } from "./buttons"
 
 export default async function CustomersTable({ query, currentPage }: { query: string; currentPage: number }) {
 	const customers = await fetchFilteredCustomers(query, currentPage)
@@ -33,6 +33,7 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 											<UpdateCustomer id={customer.id} />
 											<DeleteCustomer
 												id={customer.id}
+												customerName={customer.name}
 												fileName={customer.image_url}
 											/>
 										</div>
@@ -109,6 +110,7 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 												<UpdateCustomer id={customer.id} />
 												<DeleteCustomer
 													id={customer.id}
+													customerName={customer.name}
 													fileName={customer.image_url}
 												/>
 											</div>
