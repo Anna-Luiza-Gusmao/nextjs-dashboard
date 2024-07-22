@@ -1,3 +1,6 @@
+import Breadcrumbs from "./breadcrumbs"
+import { inter } from "./fonts"
+
 // Loading animation
 const shimmer =
 	"before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent"
@@ -236,10 +239,10 @@ export function CustomersTableRowSkeleton() {
 			</td>
 			{/* Actions */}
 			{/* <td className="whitespace-nowrap py-3 pl-6 pr-3"> */}
-				{/* <div className="flex justify-end gap-3"> */}
-					{/* <div className="h-[38px] w-[38px] rounded bg-gray-100"></div> */}
-					{/* <div className="h-[38px] w-[38px] rounded bg-gray-100"></div> */}
-				{/* </div> */}
+			{/* <div className="flex justify-end gap-3"> */}
+			{/* <div className="h-[38px] w-[38px] rounded bg-gray-100"></div> */}
+			{/* <div className="h-[38px] w-[38px] rounded bg-gray-100"></div> */}
+			{/* </div> */}
 			{/* </td> */}
 		</tr>
 	)
@@ -316,5 +319,47 @@ export function CustomersTableSkeleton() {
 				</div>
 			</div>
 		</div>
+	)
+}
+
+export function CustomersPageSkeleton() {
+	return (
+		<div className="w-full h-full">
+			<div className="flex w-full items-center justify-between">
+				<h1 className={`${inter.className} text-2xl`}>Clientes</h1>
+			</div>
+			<div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+				<div className="flex-1 h-10 rounded-lg bg-gray-50" />
+				<div className="w-14 sm:w-36 h-10 rounded-lg bg-gray-50" />
+			</div>
+			<div className="mt-6 flex w-full h-1/4 md:h-1/2 rounded-lg bg-gray-50" />
+			<div className="md:hidden mt-6 flex w-full h-1/4 md:h-1/2 rounded-lg bg-gray-50" />
+			<div className="md:hidden mt-6 flex w-full h-1/4 md:h-1/2 rounded-lg bg-gray-50" />
+			<div className="mt-5 flex w-full justify-center">
+				<div className="w-1/2 sm:w-1/6 h-10 rounded-lg bg-gray-50" />
+			</div>
+		</div>
+	)
+}
+
+export function CreateAndEditCustomersPageSkeleton(pageLabel: string, pageHref: string) {
+	return (
+		<main className="w-full h-full">
+			<Breadcrumbs
+				breadcrumbs={[
+					{ label: "Clientes", href: "/dashboard/clientes" },
+					{
+						label: pageLabel,
+						href: pageHref,
+						active: true
+					}
+				]}
+			/>
+			<div className="w-full h-2/5 md:h-1/3 rounded-md bg-gray-50 p-4 md:p-6" />
+			<div className="mt-6 flex justify-end gap-4">
+				<div className="w-32 md:w-36 h-10 bg-gray-50" />
+				<div className="w-32 md:w-36 h-10 bg-gray-50" />
+			</div>
+		</main>
 	)
 }
