@@ -127,7 +127,7 @@ export async function deleteInvoice(id: string) {
     }
 }
 
-import { signIn } from '@/auth'
+import { signIn } from '@/auth/auth'
 import { AuthError } from 'next-auth'
 
 // ...
@@ -280,8 +280,8 @@ const UpdatedCustomerFormSchema = z.object({
             message: 'O tamanho do arquivo deve ser menor que 5MB.',
         }),
     customerEmail: z.string().email({
-            message: 'Endereço de e-mail inválido.',
-        })
+        message: 'Endereço de e-mail inválido.',
+    })
 })
 
 const UpdateCustomer = UpdatedCustomerFormSchema.omit({ id: true })

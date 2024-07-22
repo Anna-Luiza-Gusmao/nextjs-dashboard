@@ -4,7 +4,7 @@ import CustomersTable from "@/app/ui/customers/table"
 import { inter } from "@/app/ui/fonts"
 import Pagination from "@/app/ui/pagination"
 import Search from "@/app/ui/search"
-import { CustomersTableSkeleton } from "@/app/ui/skeletons"
+import { CustomersTableSkeleton } from "@/app/ui/customers/skeletons"
 import { Metadata } from "next"
 import { Suspense } from "react"
 

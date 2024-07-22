@@ -2,7 +2,7 @@
 
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"
 import clsx from "clsx"
-import { Dispatch, SetStateAction, useCallback } from "react"
+import { Dispatch, SetStateAction } from "react"
 
 interface IDeleteModalProps {
     title: string
@@ -21,9 +21,9 @@ export default function DeleteModal({
     setOpenDeleteModal,
     deleteAction
 }: IDeleteModalProps) {
-    const handleCancelButton = useCallback(() => {
+    const handleCancelButton = () => {
         setOpenDeleteModal(false)
-    }, [openDeleteModal])
+    }
 
     return (
         <div className={`absolute z-30 ${clsx(openDeleteModal ? "block" : "hidden")}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
