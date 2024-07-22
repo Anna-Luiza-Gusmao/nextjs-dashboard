@@ -37,20 +37,18 @@ export default function DeleteModal({
                                 <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                                     <ExclamationTriangleIcon className="h-6 w-6 text-red-600" />
                                 </div>
-                                <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                <div className="flex flex-col gap-2 mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                     <h3
                                         className="text-base font-semibold leading-6 text-gray-900"
                                         id="modal-title"
                                     >
                                         {title}
                                     </h3>
-                                    <div className="mt-2">
-                                        <p className="text-sm text-gray-500">{description}</p>
-                                    </div>
+                                    <p className="break-words whitespace-normal text-sm text-gray-500">{description}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <div className="bg-white px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                             <form action={deleteAction}>
                                 <button
                                     type="submit"
