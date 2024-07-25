@@ -20,16 +20,16 @@ enum Routers {
 }
 
 export const PERMISSIONS: IPermissions = {
-    admin: ["/*"],
-    supervisor: [
+    [UserRole.ADMIN]: ["/*"],
+    [UserRole.SUPERVISOR]: [
         Routers.DASHBOARD,
         Routers.INVOICES,
         Routers.EDIT_INVOICES,
         Routers.CUSTOMERS,
         Routers.EDIT_CUSTOMERS
     ],
-    manager: ["/*"],
-    accountant: [
+    [UserRole.MANAGER]: ["/*"],
+    [UserRole.ACCOUNTANT]: [
         Routers.DASHBOARD,
         Routers.INVOICES,
         Routers.CREATE_INVOICES,
