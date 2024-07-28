@@ -8,6 +8,13 @@ const users = [
     password: '123456',
     permission: 'admin'
   },
+  {
+    id: '17d485fe-63bb-4457-9587-f1e0a967365e',
+    name: 'Supervisor',
+    email: 'supervisor@nextmail.com',
+    password: '123456',
+    permission: 'supervisor'
+  },
 ];
 
 const customers = [
