@@ -7,6 +7,7 @@ import Search from "@/app/ui/search"
 import { CustomersTableSkeleton } from "@/app/ui/customers/skeletons"
 import { Metadata } from "next"
 import { Suspense } from "react"
+import { auth } from "@/auth/auth"
 
 export const metadata: Metadata = {
 	title: "Customers"
@@ -24,6 +25,7 @@ export default async function Page({
 	const currentPage = Number(searchParams?.page) || 1
 
 	const totalPages = await fetchCustomersPages(query)
+	const session = await auth()
 
 	return (
 		<div className="w-full">
@@ -32,7 +34,9 @@ export default async function Page({
 			</div>
 			<div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
 				<Search placeholder="Procure os clientes..." />
-				<CreateCustomer />
+				{
+					session?.user.permission === ("admin" || "manager") && <CreateCustomer />
+				}
 			</div>
 			<Suspense key={query} fallback={<CustomersTableSkeleton />}>
 				<CustomersTable query={query} currentPage={currentPage} />
