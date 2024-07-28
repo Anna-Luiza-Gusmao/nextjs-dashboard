@@ -1,7 +1,11 @@
+import { auth } from "@/auth/auth"
 import Breadcrumbs from "../breadcrumbs"
 import { inter } from "../fonts"
+import { UserRole } from "@/auth/permissions"
 
-export function CustomersTableRowSkeleton() {
+export async function CustomersTableRowSkeleton() {
+	const session = await auth()
+
 	return (
 		<tr className="w-full border-b border-gray-100 last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
 			{/* Customer Name and Image */}
@@ -28,12 +32,18 @@ export function CustomersTableRowSkeleton() {
 				<div className="h-6 w-24 rounded bg-gray-100"></div>
 			</td>
 			{/* Actions */}
-			{/* <td className="whitespace-nowrap py-3 pl-6 pr-3"> */}
-			{/* <div className="flex justify-end gap-3"> */}
-			{/* <div className="h-[38px] w-[38px] rounded bg-gray-100"></div> */}
-			{/* <div className="h-[38px] w-[38px] rounded bg-gray-100"></div> */}
-			{/* </div> */}
-			{/* </td> */}
+			<td className="whitespace-nowrap py-3 pl-6 pr-3">
+				<div className="flex justify-end gap-3">
+					{
+						session?.user.permission !== UserRole.ACCOUNTANT
+						&& <div className="h-[38px] w-[38px] rounded bg-gray-100" />
+					}
+					{
+						session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER)
+						&& <div className="h-[38px] w-[38px] rounded bg-gray-100" />
+					}
+				</div>
+			</td>
 		</tr>
 	)
 }

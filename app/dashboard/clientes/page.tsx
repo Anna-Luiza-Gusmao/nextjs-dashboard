@@ -8,6 +8,7 @@ import { CustomersTableSkeleton } from "@/app/ui/customers/skeletons"
 import { Metadata } from "next"
 import { Suspense } from "react"
 import { auth } from "@/auth/auth"
+import { UserRole } from "@/auth/permissions"
 
 export const metadata: Metadata = {
 	title: "Customers"
@@ -35,7 +36,7 @@ export default async function Page({
 			<div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
 				<Search placeholder="Procure os clientes..." />
 				{
-					session?.user.permission === ("admin" || "manager") && <CreateCustomer />
+					session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && <CreateCustomer />
 				}
 			</div>
 			<Suspense key={query} fallback={<CustomersTableSkeleton />}>

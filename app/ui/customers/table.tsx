@@ -1,9 +1,12 @@
 import Image from "next/image"
 import { fetchFilteredCustomers } from "@/app/lib/data"
 import { DeleteCustomer, UpdateCustomer } from "./buttons"
+import { auth } from "@/auth/auth"
+import { UserRole } from "@/auth/permissions"
 
 export default async function CustomersTable({ query, currentPage }: { query: string; currentPage: number }) {
 	const customers = await fetchFilteredCustomers(query, currentPage)
+	const session = await auth()
 
 	return (
 		<div className="mt-6 flow-root">
@@ -30,12 +33,17 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 											<p className="text-sm text-gray-500">{customer.email}</p>
 										</div>
 										<div className="flex justify-end gap-2">
-											<UpdateCustomer id={customer.id} />
-											<DeleteCustomer
-												id={customer.id}
-												customerName={customer.name}
-												fileName={customer.image_url}
-											/>
+											{
+												session?.user.permission !== UserRole.ACCOUNTANT && <UpdateCustomer id={customer.id} />
+											}
+											{
+												session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER)
+												&& <DeleteCustomer
+													id={customer.id}
+													customerName={customer.name}
+													fileName={customer.image_url}
+												/>
+											}
 										</div>
 									</div>
 									<div className="flex w-full items-center justify-between border-b py-5">
@@ -107,12 +115,17 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 										</td>
 										<td className="whitespace-nowrap bg-white py-3 pl-6 pr-3">
 											<div className="flex justify-end gap-3">
-												<UpdateCustomer id={customer.id} />
-												<DeleteCustomer
-													id={customer.id}
-													customerName={customer.name}
-													fileName={customer.image_url}
-												/>
+												{
+													session?.user.permission !== UserRole.ACCOUNTANT && <UpdateCustomer id={customer.id} />
+												}
+												{
+													session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER)
+													&& <DeleteCustomer
+														id={customer.id}
+														customerName={customer.name}
+														fileName={customer.image_url}
+													/>
+												}
 											</div>
 										</td>
 									</tr>
