@@ -369,9 +369,11 @@ const UserFormSchema = z.object({
     userName: z.string().min(2, {
         message: "Digite no mínimo 2 caracteres para o nome do usuário."
     }),
-    userEmail: z.string().email({
-        message: 'Endereço de e-mail inválido.',
-    }),
+    userEmail: z.string()
+        .email({
+            message: 'Endereço de e-mail inválido.',
+        })
+        .regex(/@nextmail\.com$/, 'O e-mail deve ter o domínio @nextmail.com'),
     userPassword: z.string().min(6),
     permissionId: z.string({
         invalid_type_error: 'Selecione uma permissão.',

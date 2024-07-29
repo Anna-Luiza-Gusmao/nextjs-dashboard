@@ -87,8 +87,8 @@ export default function Form({ permissions }: { permissions: PermissionField[] }
 						</div>
 					</div>
 					<div id="password-error" aria-live="polite" aria-atomic="true">
-						{state.errors?.userEmail &&
-							state.errors.userEmail.map((error: string) => (
+						{state.errors?.userPassword &&
+							state.errors.userPassword.map((error: string) => (
 								<p className="mt-2 text-sm text-red-500" key={error}>
 									{error}
 								</p>
