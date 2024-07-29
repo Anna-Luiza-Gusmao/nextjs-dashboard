@@ -6,9 +6,9 @@ import { Metadata } from "next"
 import { auth } from "@/auth/auth"
 import { UserRole } from "@/auth/permissions"
 import { CreateUser } from "@/app/ui/users/buttons"
-import { InvoicesTableSkeleton } from "@/app/ui/invoices/skeletons"
 import { Suspense } from "react"
 import Table from "@/app/ui/users/table"
+import { UsersTableSkeleton } from "@/app/ui/users/skeletons"
 
 export const metadata: Metadata = {
 	title: "Usuários"
@@ -39,7 +39,7 @@ export default async function Page({
 					session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && <CreateUser />
 				}
 			</div>
-			<Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+			<Suspense key={query + currentPage} fallback={<UsersTableSkeleton />}>
 				<Table query={query} currentPage={currentPage} />
 			</Suspense>
 			<div className="mt-5 flex w-full justify-center">

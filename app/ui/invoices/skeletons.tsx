@@ -35,17 +35,18 @@ export async function InvoicesTableRowSkeleton() {
 			<td className="whitespace-nowrap py-3 pl-6 pr-3">
 				<div className="flex justify-end gap-3">
 					<div className="h-[38px] w-[38px] rounded bg-gray-100" />
-					{
-						session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER)
-						&& <div className="h-[38px] w-[38px] rounded bg-gray-100" />
-					}
+					{session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && (
+						<div className="h-[38px] w-[38px] rounded bg-gray-100" />
+					)}
 				</div>
 			</td>
 		</tr>
 	)
 }
 
-export function InvoicesMobileSkeleton() {
+export async function InvoicesMobileSkeleton() {
+	const session = await auth()
+
 	return (
 		<div className="mb-2 w-full rounded-md bg-white p-4">
 			<div className="flex items-center justify-between border-b border-gray-100 pb-8">
@@ -62,7 +63,9 @@ export function InvoicesMobileSkeleton() {
 				</div>
 				<div className="flex justify-end gap-2">
 					<div className="h-10 w-10 rounded bg-gray-100"></div>
-					<div className="h-10 w-10 rounded bg-gray-100"></div>
+					{session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && (
+						<div className="h-10 w-10 rounded bg-gray-100"></div>
+					)}
 				</div>
 			</div>
 		</div>
@@ -120,7 +123,9 @@ export function InvoicesTableSkeleton() {
 	)
 }
 
-export function InvoicesPageSkeleton() {
+export async function InvoicesPageSkeleton() {
+	const session = await auth()
+
 	return (
 		<div className="w-full h-full">
 			<div className="flex w-full items-center justify-between">
@@ -128,7 +133,9 @@ export function InvoicesPageSkeleton() {
 			</div>
 			<div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
 				<div className="flex-1 h-10 rounded-lg bg-gray-50" />
-				<div className="w-14 sm:w-36 h-10 rounded-lg bg-gray-50" />
+				{session?.user.permission !== UserRole.SUPERVISOR && (
+					<div className="w-14 sm:w-36 h-10 rounded-lg bg-gray-50" />
+				)}
 			</div>
 			<div className="mt-6 flex w-full h-1/4 md:h-1/2 rounded-lg bg-gray-50" />
 			<div className="md:hidden mt-6 flex w-full h-1/4 md:h-1/2 rounded-lg bg-gray-50" />
