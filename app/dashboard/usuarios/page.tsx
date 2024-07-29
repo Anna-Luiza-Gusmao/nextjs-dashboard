@@ -1,14 +1,14 @@
 import Pagination from "@/app/ui/pagination"
 import Search from "@/app/ui/search"
-import Table from "@/app/ui/invoices/table"
-import { CreateInvoice } from "@/app/ui/invoices/buttons"
 import { inter } from "@/app/ui/fonts"
-import { InvoicesTableSkeleton } from "@/app/ui/invoices/skeletons"
-import { Suspense } from "react"
-import { fetchInvoicesPages } from "@/app/lib/data"
+import { fetchUsersPages } from "@/app/lib/data"
 import { Metadata } from "next"
 import { auth } from "@/auth/auth"
 import { UserRole } from "@/auth/permissions"
+import { CreateUser } from "@/app/ui/users/buttons"
+import { InvoicesTableSkeleton } from "@/app/ui/invoices/skeletons"
+import { Suspense } from "react"
+import Table from "@/app/ui/users/table"
 
 export const metadata: Metadata = {
 	title: "Usuários"
@@ -25,7 +25,7 @@ export default async function Page({
 	const query = searchParams?.query || ""
 	const currentPage = Number(searchParams?.page) || 1
 
-	const totalPages = await fetchInvoicesPages(query)
+	const totalPages = await fetchUsersPages(query)
 	const session = await auth()
 
 	return (
@@ -33,15 +33,15 @@ export default async function Page({
 			<div className="flex w-full items-center justify-between">
 				<h1 className={`${inter.className} text-2xl`}>Usuários</h1>
 			</div>
-			{/* <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-				<Search placeholder="Procure as faturas..." />
+			<div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+				<Search placeholder="Procure os usuários..." />
 				{
-					session?.user.permission !== UserRole.SUPERVISOR && <CreateInvoice />
+					session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && <CreateUser />
 				}
 			</div>
 			<Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
 				<Table query={query} currentPage={currentPage} />
-			</Suspense> */}
+			</Suspense>
 			<div className="mt-5 flex w-full justify-center">
 				<Pagination totalPages={totalPages} />
 			</div>

@@ -7,6 +7,7 @@ import {
   InvoicesTable,
   LatestInvoiceRaw,
   Revenue,
+  UsersTable,
 } from './definitions'
 import { formatCurrency } from './utils'
 // import { revenue } from './placeholder-data'
@@ -282,5 +283,52 @@ export async function fetchCustomerById(id: string) {
   } catch (error) {
     console.error('Database Error:', error)
     throw new Error('Failed to fetch customer.')
+  }
+}
+
+export async function fetchFilteredUsers(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE
+
+  try {
+    const users = await sql<UsersTable>`
+      SELECT
+        users.id,
+        users.name,
+        users.email,
+        users.permission
+      FROM users
+      WHERE
+        users.name ILIKE ${`%${query}%`} OR
+        users.email ILIKE ${`%${query}%`} OR
+        users.permission ILIKE ${`%${query}%`}
+      ORDER BY users.name ASC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `
+
+    return users.rows
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to fetch users.')
+  }
+}
+
+export async function fetchUsersPages(query: string) {
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM users
+    WHERE
+      users.name ILIKE ${`%${query}%`} OR
+      users.email ILIKE ${`%${query}%`} OR
+      users.email ILIKE ${`%${query}%`}
+  `
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE)
+    return totalPages
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to fetch total number of users.')
   }
 }
