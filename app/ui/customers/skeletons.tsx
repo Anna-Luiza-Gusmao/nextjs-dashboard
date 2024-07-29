@@ -37,7 +37,7 @@ export async function CustomersTableRowSkeleton() {
 					{session?.user.permission !== UserRole.ACCOUNTANT && (
 						<div className="h-[38px] w-[38px] rounded bg-gray-100" />
 					)}
-					{session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && (
+					{(session?.user.permission === UserRole.ADMIN || session?.user.permission === UserRole.MANAGER) && (
 						<div className="h-[38px] w-[38px] rounded bg-gray-100" />
 					)}
 				</div>
@@ -67,7 +67,7 @@ export async function CustomersMobileSkeleton() {
 					{session?.user.permission !== UserRole.ACCOUNTANT && (
 						<div className="h-10 w-10 rounded bg-gray-100"></div>
 					)}
-					{session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && (
+					{(session?.user.permission === UserRole.ADMIN || session?.user.permission === UserRole.MANAGER) && (
 						<div className="h-10 w-10 rounded bg-gray-100"></div>
 					)}
 				</div>
@@ -136,7 +136,7 @@ export async function CustomersPageSkeleton() {
 			</div>
 			<div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
 				<div className="flex-1 h-10 rounded-lg bg-gray-50" />
-				{session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && (
+				{(session?.user.permission === UserRole.ADMIN || session?.user.permission === UserRole.MANAGER) && (
 					<div className="w-14 sm:w-36 h-10 rounded-lg bg-gray-50" />
 				)}
 			</div>

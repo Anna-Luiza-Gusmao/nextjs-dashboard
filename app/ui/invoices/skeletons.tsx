@@ -35,7 +35,7 @@ export async function InvoicesTableRowSkeleton() {
 			<td className="whitespace-nowrap py-3 pl-6 pr-3">
 				<div className="flex justify-end gap-3">
 					<div className="h-[38px] w-[38px] rounded bg-gray-100" />
-					{session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && (
+					{(session?.user.permission === UserRole.ADMIN || session?.user.permission === UserRole.MANAGER) && (
 						<div className="h-[38px] w-[38px] rounded bg-gray-100" />
 					)}
 				</div>
@@ -63,7 +63,7 @@ export async function InvoicesMobileSkeleton() {
 				</div>
 				<div className="flex justify-end gap-2">
 					<div className="h-10 w-10 rounded bg-gray-100"></div>
-					{session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && (
+					{(session?.user.permission === UserRole.ADMIN || session?.user.permission === UserRole.MANAGER) && (
 						<div className="h-10 w-10 rounded bg-gray-100"></div>
 					)}
 				</div>

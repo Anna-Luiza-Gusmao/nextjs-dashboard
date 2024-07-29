@@ -33,17 +33,17 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 											<p className="text-sm text-gray-500">{customer.email}</p>
 										</div>
 										<div className="flex justify-end gap-2">
-											{
-												session?.user.permission !== UserRole.ACCOUNTANT && <UpdateCustomer id={customer.id} />
-											}
-											{
-												session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER)
-												&& <DeleteCustomer
+											{session?.user.permission !== UserRole.ACCOUNTANT && (
+												<UpdateCustomer id={customer.id} />
+											)}
+											{(session?.user.permission === UserRole.ADMIN ||
+												session?.user.permission === UserRole.MANAGER) && (
+												<DeleteCustomer
 													id={customer.id}
 													customerName={customer.name}
 													fileName={customer.image_url}
 												/>
-											}
+											)}
 										</div>
 									</div>
 									<div className="flex w-full items-center justify-between border-b py-5">
@@ -115,17 +115,17 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 										</td>
 										<td className="whitespace-nowrap bg-white py-3 pl-6 pr-3">
 											<div className="flex justify-end gap-3">
-												{
-													session?.user.permission !== UserRole.ACCOUNTANT && <UpdateCustomer id={customer.id} />
-												}
-												{
-													session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER)
-													&& <DeleteCustomer
+												{session?.user.permission !== UserRole.ACCOUNTANT && (
+													<UpdateCustomer id={customer.id} />
+												)}
+												{(session?.user.permission === UserRole.ADMIN ||
+													session?.user.permission === UserRole.MANAGER) && (
+													<DeleteCustomer
 														id={customer.id}
 														customerName={customer.name}
 														fileName={customer.image_url}
 													/>
-												}
+												)}
 											</div>
 										</td>
 									</tr>

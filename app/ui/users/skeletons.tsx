@@ -55,7 +55,7 @@ export async function UsersMobileSkeleton() {
 				</div>
 				<div className="flex gap-2">
 					<div className="h-10 w-10 rounded bg-gray-100"></div>
-					{session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && (
+					{(session?.user.permission === UserRole.ADMIN || session?.user.permission === UserRole.MANAGER) && (
 						<div className="h-10 w-10 rounded bg-gray-100"></div>
 					)}
 				</div>
@@ -115,7 +115,7 @@ export async function UsersPageSkeleton() {
 			</div>
 			<div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
 				<div className="flex-1 h-10 rounded-lg bg-gray-50" />
-				{session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && (
+				{(session?.user.permission === UserRole.ADMIN || session?.user.permission === UserRole.MANAGER) && (
 					<div className="w-14 sm:w-36 h-10 rounded-lg bg-gray-50" />
 				)}
 			</div>

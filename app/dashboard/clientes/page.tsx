@@ -35,9 +35,9 @@ export default async function Page({
 			</div>
 			<div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
 				<Search placeholder="Procure os clientes..." />
-				{
-					session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && <CreateCustomer />
-				}
+				{(session?.user.permission === UserRole.ADMIN || session?.user.permission === UserRole.MANAGER) && (
+					<CreateCustomer />
+				)}
 			</div>
 			<Suspense key={query} fallback={<CustomersTableSkeleton />}>
 				<CustomersTable query={query} currentPage={currentPage} />

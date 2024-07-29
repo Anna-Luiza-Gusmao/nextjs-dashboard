@@ -28,6 +28,8 @@ export default async function Page({
 	const totalPages = await fetchUsersPages(query)
 	const session = await auth()
 
+	console.log(session?.user.permission === UserRole.MANAGER)
+
 	return (
 		<div className="w-full">
 			<div className="flex w-full items-center justify-between">
@@ -35,9 +37,9 @@ export default async function Page({
 			</div>
 			<div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
 				<Search placeholder="Procure os usuários..." />
-				{
-					session?.user.permission === (UserRole.ADMIN || UserRole.MANAGER) && <CreateUser />
-				}
+				{(session?.user.permission === UserRole.ADMIN || session?.user.permission === UserRole.MANAGER) && (
+					<CreateUser />
+				)}
 			</div>
 			<Suspense key={query + currentPage} fallback={<UsersTableSkeleton />}>
 				<Table query={query} currentPage={currentPage} />
