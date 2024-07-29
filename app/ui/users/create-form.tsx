@@ -1,17 +1,18 @@
 "use client"
 
 import Link from "next/link"
-import { AtSymbolIcon, ClipboardDocumentCheckIcon, UserPlusIcon } from "@heroicons/react/24/outline"
+import { AtSymbolIcon, ClipboardDocumentCheckIcon, LockClosedIcon, UserPlusIcon } from "@heroicons/react/24/outline"
 import { Button } from "@/app/ui/button"
-import { State } from "@/app/lib/actions"
+import { createUser, UserState } from "@/app/lib/actions"
 import { PermissionField } from "@/app/lib/definitions"
+import { useActionState } from "react"
 
 export default function Form({ permissions }: { permissions: PermissionField[] }) {
-	const initialState: State = { message: null, errors: {} }
-	// const [state, formAction] = useActionState(createInvoice, initialState)
+	const initialState: UserState = { message: null, errors: {} }
+	const [state, formAction] = useActionState(createUser, initialState)
 
 	return (
-		<form>
+		<form action={formAction}>
 			<div className="rounded-md bg-gray-50 p-4 md:p-6">
 				{/* User Name */}
 				<div className="mb-4">
@@ -32,12 +33,12 @@ export default function Form({ permissions }: { permissions: PermissionField[] }
 						</div>
 					</div>
 					<div id="name-error" aria-live="polite" aria-atomic="true">
-						{/* {state.errors?.customerName &&
-							state.errors.customerName.map((error: string) => (
+						{state.errors?.userName &&
+							state.errors.userName.map((error: string) => (
 								<p className="mt-2 text-sm text-red-500" key={error}>
 									{error}
 								</p>
-							))} */}
+							))}
 					</div>
 				</div>
 				{/* User email */}
@@ -59,23 +60,50 @@ export default function Form({ permissions }: { permissions: PermissionField[] }
 						</div>
 					</div>
 					<div id="email-error" aria-live="polite" aria-atomic="true">
-						{/* {state.errors?.customerEmail &&
-							state.errors.customerEmail.map((error: string) => (
+						{state.errors?.userEmail &&
+							state.errors.userEmail.map((error: string) => (
 								<p className="mt-2 text-sm text-red-500" key={error}>
 									{error}
 								</p>
-							))} */}
+							))}
+					</div>
+				</div>
+				{/* User password */}
+				<div className="mb-4">
+					<label htmlFor="userPassword" className="mb-2 block text-sm font-medium">
+						Digite a senha do novo usuário
+					</label>
+					<div className="relative mt-2 rounded-md">
+						<div className="relative">
+							<input
+								id="password"
+								name="userPassword"
+								type="password"
+								placeholder="Digite uma senha de no mínimo 6 caracteres"
+								className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+								aria-describedby="password-error"
+							/>
+							<LockClosedIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+						</div>
+					</div>
+					<div id="password-error" aria-live="polite" aria-atomic="true">
+						{state.errors?.userEmail &&
+							state.errors.userEmail.map((error: string) => (
+								<p className="mt-2 text-sm text-red-500" key={error}>
+									{error}
+								</p>
+							))}
 					</div>
 				</div>
 				{/* User permission */}
 				<div className="mb-4">
-					<label htmlFor="permission" className="mb-2 block text-sm font-medium">
+					<label htmlFor="userPermission" className="mb-2 block text-sm font-medium">
 						Escolha uma permissão para o usuário
 					</label>
 					<div className="relative">
 						<select
 							id="permission"
-							name="permission"
+							name="userPermission"
 							className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
 							defaultValue=""
 							aria-describedby="permission-error"
@@ -92,19 +120,19 @@ export default function Form({ permissions }: { permissions: PermissionField[] }
 						<ClipboardDocumentCheckIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
 					</div>
 					<div id="permission-error" aria-live="polite" aria-atomic="true">
-						{/* {state.errors?.customerId &&
-							state.errors.customerId.map((error: string) => (
+						{state.errors?.permissionId &&
+							state.errors.permissionId.map((error: string) => (
 								<p className="mt-2 text-sm text-red-500" key={error}>
 									{error}
 								</p>
-							))} */}
+							))}
 					</div>
 				</div>
-				{/* {state.message && (
+				{state.message && (
 					<div aria-live="polite" aria-atomic="true">
 						<p className="mt-2 text-sm text-red-500">{state.message}</p>
 					</div>
-				)} */}
+				)}
 			</div>
 			<div className="mt-6 flex justify-end gap-4">
 				<Link

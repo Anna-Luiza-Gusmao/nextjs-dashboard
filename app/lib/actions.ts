@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { sql } from '@vercel/postgres'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import bcrypt from 'bcrypt'
 
 const InvoiceFormSchema = z.object({
     id: z.string(),
@@ -361,4 +362,63 @@ export async function updateCustomer(id: string, oldCustomerImage: string, prevS
 
     revalidatePath("/dashboard/clientes")
     redirect("/dashboard/clientes")
+}
+
+const UserFormSchema = z.object({
+    id: z.string(),
+    userName: z.string().min(2, {
+        message: "Digite no mínimo 2 caracteres para o nome do usuário."
+    }),
+    userEmail: z.string().email({
+        message: 'Endereço de e-mail inválido.',
+    }),
+    userPassword: z.string().min(6),
+    permissionId: z.string({
+        invalid_type_error: 'Selecione uma permissão.',
+    })
+})
+
+const CreateUser = UserFormSchema.omit({ id: true })
+
+export type UserState = {
+    errors?: {
+        userName?: string[]
+        userEmail?: string[]
+        userPassword?: string[]
+        permissionId?: string[]
+    }
+    message?: string | null
+}
+
+export async function createUser(prevState: UserState, formData: FormData) {
+    const validatedFields = CreateUser.safeParse({
+        userName: formData.get('userName'),
+        userEmail: formData.get('userEmail'),
+        userPassword: formData.get('userPassword'),
+        permissionId: formData.get('userPermission'),
+    })
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Algo está errado, não foi possível criar um novo usuário.',
+        }
+    }
+
+    const { userName, userEmail, userPassword, permissionId } = validatedFields.data
+    const hashedUserPassword = await bcrypt.hash(userPassword, 10)
+
+    try {
+        await sql`
+          INSERT INTO users (name, email, password, permission_id)
+          VALUES (${userName}, ${userEmail}, ${hashedUserPassword}, ${permissionId})
+        `
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Create User.',
+        }
+    }
+
+    revalidatePath('/dashboard/usuarios')
+    redirect('/dashboard/usuarios')
 }
