@@ -1,4 +1,6 @@
+import { fetchPermissions } from "@/app/lib/data"
 import Breadcrumbs from "@/app/ui/breadcrumbs"
+import Form from "@/app/ui/users/create-form"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -6,6 +8,8 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
+	const permissions = await fetchPermissions()
+	
 	return (
 		<main>
 			<Breadcrumbs
@@ -18,6 +22,7 @@ export default async function Page() {
 					}
 				]}
 			/>
+			<Form permissions={permissions} />
 		</main>
 	)
 }

@@ -6,6 +6,7 @@ import {
   InvoiceForm,
   InvoicesTable,
   LatestInvoiceRaw,
+  PermissionField,
   Revenue,
   UsersTable,
 } from './definitions'
@@ -298,12 +299,13 @@ export async function fetchFilteredUsers(
         users.id,
         users.name,
         users.email,
-        users.permission
+        permissions.permission AS permission
       FROM users
+      JOIN permissions ON users.permission_id = permissions.id
       WHERE
         users.name ILIKE ${`%${query}%`} OR
         users.email ILIKE ${`%${query}%`} OR
-        users.permission ILIKE ${`%${query}%`}
+        permissions.permission ILIKE ${`%${query}%`}
       ORDER BY users.name ASC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `
@@ -321,7 +323,6 @@ export async function fetchUsersPages(query: string) {
     FROM users
     WHERE
       users.name ILIKE ${`%${query}%`} OR
-      users.email ILIKE ${`%${query}%`} OR
       users.email ILIKE ${`%${query}%`}
   `
 
@@ -330,5 +331,23 @@ export async function fetchUsersPages(query: string) {
   } catch (error) {
     console.error('Database Error:', error)
     throw new Error('Failed to fetch total number of users.')
+  }
+}
+
+export async function fetchPermissions() {
+  try {
+    const data = await sql<PermissionField>`
+      SELECT
+        id,
+        permission
+      FROM permissions
+      ORDER BY permission ASC
+    `
+
+    const permissions = data.rows
+    return permissions
+  } catch (err) {
+    console.error('Database Error:', err)
+    throw new Error('Failed to fetch all users permission.')
   }
 }

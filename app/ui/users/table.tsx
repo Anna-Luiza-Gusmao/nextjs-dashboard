@@ -7,19 +7,6 @@ export default async function UsersTable({ query, currentPage }: { query: string
 	const users = await fetchFilteredUsers(query, currentPage)
 	const session = await auth()
 
-	const userType = (permission: string) => {
-		switch (permission) {
-			case "admin":
-				return "Administrador"
-			case "supervisor":
-				return "Supervisor de Cobrança"
-			case "manager":
-				return "Gerente Financeiro"
-			default:
-				return "Contador"
-		}
-	}
-
 	return (
 		<div className="mt-6 flow-root">
 			<div className="overflow-x-auto">
@@ -36,7 +23,7 @@ export default async function UsersTable({ query, currentPage }: { query: string
 												</div>
 											</div>
 											<p className="text-sm text-gray-500">{user.email}</p>
-											<p className="text-sm text-gray-500">{userType(user.permission)}</p>
+											<p className="text-sm text-gray-500">{user.permission}</p>
 										</div>
 										<div className="flex justify-end gap-2">
 											{
@@ -86,7 +73,7 @@ export default async function UsersTable({ query, currentPage }: { query: string
 											{user.email}
 										</td>
 										<td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
-											{userType(user.permission)}
+											{user.permission}
 										</td>
 										<td className="whitespace-nowrap bg-white py-3 pl-6 pr-3">
 											<div className="flex justify-end gap-3">

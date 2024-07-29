@@ -102,5 +102,10 @@ export type UsersTable = {
   id: string
   name: string
   email: string
-  permission: 'admin' | 'supervisor' | 'manager' | 'accountant'
+  permission: string
+}
+
+export type PermissionField = {
+  id: string
+  permission: string
 }
