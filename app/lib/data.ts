@@ -351,3 +351,25 @@ export async function fetchPermissions() {
     throw new Error('Failed to fetch all users permission.')
   }
 }
+
+export async function fetchUserById(id: string) {
+  try {
+    const data = await sql<UsersTable>`
+      SELECT
+        users.id,
+        users.name,
+        users.email,
+        permissions.permission AS permission
+      FROM users
+      JOIN permissions ON users.permission_id = permissions.id
+      WHERE users.id = ${id};
+    `
+
+    const user = data.rows[0]
+
+    return user
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to fetch user.')
+  }
+}
