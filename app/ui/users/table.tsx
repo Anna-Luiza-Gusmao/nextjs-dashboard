@@ -34,8 +34,7 @@ export default async function UsersTable({ query, currentPage }: { query: string
 												session?.user.permission === UserRole.ADMIN
 												&& <DeleteUser
 													id={user.id}
-													customerName={user.name}
-													invoiceValue={2}
+													userName={user.name}
 												/>
 											}
 										</div>
@@ -85,8 +84,7 @@ export default async function UsersTable({ query, currentPage }: { query: string
 													session?.user.permission === UserRole.ADMIN
 													&& <DeleteUser
 														id={user.id}
-														customerName={user.name}
-														invoiceValue={2}
+														userName={user.name}
 													/>
 												}
 											</div>

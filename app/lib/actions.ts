@@ -424,3 +424,15 @@ export async function createUser(prevState: UserState, formData: FormData) {
     revalidatePath('/dashboard/usuarios')
     redirect('/dashboard/usuarios')
 }
+
+export async function deleteUser(id: string) {
+    try {
+        await sql`DELETE FROM users WHERE id = ${id}`
+        revalidatePath('/dashboard/usuarios')
+        return { message: 'Deleted User.' }
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Delete User.',
+        }
+    }
+}

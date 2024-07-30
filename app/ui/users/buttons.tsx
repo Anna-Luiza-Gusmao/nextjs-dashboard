@@ -1,6 +1,6 @@
 "use client"
 
-import { deleteInvoice } from "@/app/lib/actions"
+import { deleteUser } from "@/app/lib/actions"
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
 import { useState } from "react"
@@ -25,12 +25,12 @@ export function UpdateUser({ id }: { id: string }) {
 	)
 }
 
-export function DeleteUser({ id, customerName, invoiceValue }: { id: string; customerName: string; invoiceValue: number }) {
-	const deleteInvoiceWithId = deleteInvoice.bind(null, id)
-	const [openDeleteCustomer, setOpenDeleteCustomer] = useState(false)
+export function DeleteUser({ id, userName }: { id: string; userName: string; }) {
+	const deleteUserWithId = deleteUser.bind(null, id)
+	const [openDeleteUser, setOpenDeleteUser] = useState(false)
 
 	const handleOpenDeleteModal = () => {
-		setOpenDeleteCustomer(true)
+		setOpenDeleteUser(true)
 	}
 
 	return (
@@ -39,13 +39,13 @@ export function DeleteUser({ id, customerName, invoiceValue }: { id: string; cus
 				<span className="sr-only">Deletar</span>
 				<TrashIcon className="w-4" />
 			</button>
-			{openDeleteCustomer &&
+			{openDeleteUser &&
 				DeleteModal({
-					title: `Deletar o usuário ${customerName}`,
+					title: `Deletar o usuário ${userName}`,
 					description: "Tem certeza que deseja deletar permanentemente o usuário?",
-					openDeleteModal: openDeleteCustomer,
-					setOpenDeleteModal: setOpenDeleteCustomer,
-					deleteAction: deleteInvoiceWithId
+					openDeleteModal: openDeleteUser,
+					setOpenDeleteModal: setOpenDeleteUser,
+					deleteAction: deleteUserWithId
 				})}
 		</>
 	)
