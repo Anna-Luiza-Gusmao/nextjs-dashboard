@@ -3,13 +3,14 @@
 import Link from "next/link"
 import { AtSymbolIcon, ClipboardDocumentCheckIcon, LockClosedIcon, UserPlusIcon } from "@heroicons/react/24/outline"
 import { Button } from "@/app/ui/button"
-import { createUser, UserState } from "@/app/lib/actions"
+import { updateUser, UserState } from "@/app/lib/actions"
 import { PermissionField, UsersTable } from "@/app/lib/definitions"
 import { useActionState } from "react"
 
 export default function Form({ user, permissions }: { user: UsersTable; permissions: PermissionField[] }) {
 	const initialState: UserState = { message: null, errors: {} }
-	const [state, formAction] = useActionState(createUser, initialState)
+	const updateUserWithId = updateUser.bind(null, user.id)
+	const [state, formAction] = useActionState(updateUserWithId, initialState)
 
 	return (
 		<form action={formAction}>

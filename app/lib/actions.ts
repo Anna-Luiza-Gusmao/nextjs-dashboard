@@ -374,7 +374,9 @@ const UserFormSchema = z.object({
             message: 'Endereço de e-mail inválido.',
         })
         .regex(/@nextmail\.com$/, 'O e-mail deve ter o domínio @nextmail.com'),
-    userPassword: z.string().min(6),
+    userPassword: z.string().min(6, {
+        message: "Digite uma senha de no mínimo 6 caracteres."
+    }),
     permissionId: z.string({
         invalid_type_error: 'Selecione uma permissão.',
     })
@@ -435,4 +437,70 @@ export async function deleteUser(id: string) {
             message: 'Database Error: Failed to Delete User.',
         }
     }
+}
+
+const UpdatedUserFormSchema = z.object({
+    id: z.string(),
+    userName: z.string().min(2, {
+        message: "Digite no mínimo 2 caracteres para o nome do usuário."
+    }),
+    userEmail: z.string()
+        .email({
+            message: 'Endereço de e-mail inválido.',
+        })
+        .regex(/@nextmail\.com$/, 'O e-mail deve ter o domínio @nextmail.com'),
+    userPassword: z.string()
+        .min(6, { message: "Digite uma senha de no mínimo 6 caracteres." })
+        .or(z.literal(''))
+        .transform(value => value === '' ? undefined : value)
+        .optional(),
+    permissionId: z.string({
+        invalid_type_error: 'Selecione uma permissão.',
+    })
+})
+
+const UpdateUser = UpdatedUserFormSchema.omit({ id: true })
+
+export async function updateUser(id: string, prevState: UserState, formData: FormData) {
+    const validatedFields = UpdateUser.safeParse({
+        userName: formData.get('userName'),
+        userEmail: formData.get('userEmail'),
+        userPassword: formData?.get('userPassword'),
+        permissionId: formData.get('userPermission'),
+    })
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Algo está errado, não foi possível editar o usuário.',
+        }
+    }
+
+    const { userName, userEmail, userPassword, permissionId } = validatedFields.data
+    const newUserPassword = userPassword && await bcrypt.hash(userPassword, 10)
+
+    try {
+        if (newUserPassword) {
+            await sql`
+                UPDATE users
+                    SET name = ${userName}, email = ${userEmail}, 
+                        password = ${newUserPassword}, permission_id = ${permissionId}
+                    WHERE id = ${id}
+            `
+        } else {
+            await sql`
+                UPDATE users
+                    SET name = ${userName}, email = ${userEmail}, 
+                        permission_id = ${permissionId}
+                    WHERE id = ${id}
+            `
+        }
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Update User.',
+        }
+    }
+
+    revalidatePath('/dashboard/usuarios')
+    redirect('/dashboard/usuarios')
 }
