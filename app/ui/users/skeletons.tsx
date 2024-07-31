@@ -142,7 +142,7 @@ export function CreateAndEditUsersPageSkeleton(pageLabel: string, pageHref: stri
 					}
 				]}
 			/>
-			<div className="w-full h-2/5 md:h-1/3 rounded-md bg-gray-50 p-4 md:p-6" />
+			<div className="w-full h-4/5 md:h-1/2 rounded-md bg-gray-50 p-4 md:p-6" />
 			<div className="mt-6 flex justify-end gap-4">
 				<div className="w-32 md:w-36 h-10 bg-gray-50" />
 				<div className="w-32 md:w-36 h-10 bg-gray-50" />

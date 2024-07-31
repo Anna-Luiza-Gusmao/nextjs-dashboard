@@ -28,8 +28,6 @@ export default async function Page({
 	const totalPages = await fetchUsersPages(query)
 	const session = await auth()
 
-	console.log(session?.user.permission === UserRole.MANAGER)
-
 	return (
 		<div className="w-full">
 			<div className="flex w-full items-center justify-between">
