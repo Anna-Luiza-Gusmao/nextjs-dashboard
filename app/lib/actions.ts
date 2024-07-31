@@ -6,6 +6,16 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import bcrypt from 'bcrypt'
 
+export const verifyAccountantUser = async (): Promise<boolean> => {
+    const session = await auth()
+    
+    if (session?.user.permission === UserRole.ACCOUNTANT) {
+      return true
+    } 
+  
+    return false
+}
+
 const InvoiceFormSchema = z.object({
     id: z.string(),
     customerId: z.string({
@@ -128,8 +138,9 @@ export async function deleteInvoice(id: string) {
     }
 }
 
-import { signIn } from '@/auth/auth'
+import { auth, signIn } from '@/auth/auth'
 import { AuthError } from 'next-auth'
+import { UserRole } from '@/auth/permissions'
 
 // ...
 
