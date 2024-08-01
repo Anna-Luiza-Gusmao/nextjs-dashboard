@@ -8,7 +8,16 @@ import { UserRole } from "./permissions"
 
 async function getUser(email: string): Promise<User | undefined> {
     try {
-        const result = await sql<User>`SELECT * FROM users WHERE email=${email}`
+        const result = await sql<User>`
+            SELECT 
+                users.id,
+                users.name,
+                users.email,
+                users.password,
+                permissions.value AS permission
+            FROM users
+            JOIN permissions ON users.permission_id = permissions.id
+            WHERE users.email = ${email}`
         const user = result.rows[0]
 
         if (user) {

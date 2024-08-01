@@ -9,14 +9,19 @@ interface IPermissions {
     [role: string]: string[]
 }
 
+const defaultPath = "/dashboard"
+
 enum Routers {
-    DASHBOARD = "/dashboard",
-    INVOICES = "/dashboard/faturas",
-    CREATE_INVOICES = "/dashboard/faturas/criar",
-    EDIT_INVOICES = "/dashboard/faturas/:id/editar",
-    CUSTOMERS = "/dashboard/clientes",
-    CREATE_CUSTOMERS = "/dashboard/clientes/criar",
-    EDIT_CUSTOMERS = "/dashboard/clientes/:id/editar"
+    DASHBOARD = defaultPath,
+    INVOICES = `${defaultPath}/faturas`,
+    CREATE_INVOICES = `${defaultPath}/faturas/criar`,
+    EDIT_INVOICES = `${defaultPath}/faturas/:id/editar`,
+    CUSTOMERS = `${defaultPath}/clientes`,
+    CREATE_CUSTOMERS = `${defaultPath}/clientes/criar`,
+    EDIT_CUSTOMERS = `${defaultPath}/clientes/:id/editar`,
+    USERS = `${defaultPath}/usuarios`,
+    CREATE_USERS = `${defaultPath}/usuarios/criar`,
+    EDIT_USERS = `${defaultPath}/usuarios/:id/editar`
 }
 
 export const PERMISSIONS: IPermissions = {
@@ -26,7 +31,9 @@ export const PERMISSIONS: IPermissions = {
         Routers.INVOICES,
         Routers.EDIT_INVOICES,
         Routers.CUSTOMERS,
-        Routers.EDIT_CUSTOMERS
+        Routers.EDIT_CUSTOMERS,
+        Routers.USERS,
+        Routers.EDIT_USERS
     ],
     [UserRole.MANAGER]: ["/*"],
     [UserRole.ACCOUNTANT]: [

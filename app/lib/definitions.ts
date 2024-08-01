@@ -97,3 +97,15 @@ export type CustomerForm = {
   email: string
   image_url: string
 }
+
+export type UsersTable = {
+  id: string
+  name: string
+  email: string
+  permission: string
+}
+
+export type PermissionField = {
+  id: string
+  permission: string
+}

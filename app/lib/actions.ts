@@ -4,6 +4,17 @@ import { z } from 'zod'
 import { sql } from '@vercel/postgres'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import bcrypt from 'bcrypt'
+
+export const verifyAccountantUser = async (): Promise<boolean> => {
+    const session = await auth()
+    
+    if (session?.user.permission === UserRole.ACCOUNTANT) {
+      return true
+    } 
+  
+    return false
+}
 
 const InvoiceFormSchema = z.object({
     id: z.string(),
@@ -127,8 +138,9 @@ export async function deleteInvoice(id: string) {
     }
 }
 
-import { signIn } from '@/auth/auth'
+import { auth, signIn } from '@/auth/auth'
 import { AuthError } from 'next-auth'
+import { UserRole } from '@/auth/permissions'
 
 // ...
 
@@ -361,4 +373,145 @@ export async function updateCustomer(id: string, oldCustomerImage: string, prevS
 
     revalidatePath("/dashboard/clientes")
     redirect("/dashboard/clientes")
+}
+
+const UserFormSchema = z.object({
+    id: z.string(),
+    userName: z.string().min(2, {
+        message: "Digite no mínimo 2 caracteres para o nome do usuário."
+    }),
+    userEmail: z.string()
+        .email({
+            message: 'Endereço de e-mail inválido.',
+        })
+        .regex(/@nextmail\.com$/, 'O e-mail deve ter o domínio @nextmail.com'),
+    userPassword: z.string().min(6, {
+        message: "Digite uma senha de no mínimo 6 caracteres."
+    }),
+    permissionId: z.string({
+        invalid_type_error: 'Selecione uma permissão.',
+    })
+})
+
+const CreateUser = UserFormSchema.omit({ id: true })
+
+export type UserState = {
+    errors?: {
+        userName?: string[]
+        userEmail?: string[]
+        userPassword?: string[]
+        permissionId?: string[]
+    }
+    message?: string | null
+}
+
+export async function createUser(prevState: UserState, formData: FormData) {
+    const validatedFields = CreateUser.safeParse({
+        userName: formData.get('userName'),
+        userEmail: formData.get('userEmail'),
+        userPassword: formData.get('userPassword'),
+        permissionId: formData.get('userPermission'),
+    })
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Algo está errado, não foi possível criar um novo usuário.',
+        }
+    }
+
+    const { userName, userEmail, userPassword, permissionId } = validatedFields.data
+    const hashedUserPassword = await bcrypt.hash(userPassword, 10)
+
+    try {
+        await sql`
+          INSERT INTO users (name, email, password, permission_id)
+          VALUES (${userName}, ${userEmail}, ${hashedUserPassword}, ${permissionId})
+        `
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Create User.',
+        }
+    }
+
+    revalidatePath('/dashboard/usuarios')
+    redirect('/dashboard/usuarios')
+}
+
+export async function deleteUser(id: string) {
+    try {
+        await sql`DELETE FROM users WHERE id = ${id}`
+        revalidatePath('/dashboard/usuarios')
+        return { message: 'Deleted User.' }
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Delete User.',
+        }
+    }
+}
+
+const UpdatedUserFormSchema = z.object({
+    id: z.string(),
+    userName: z.string().min(2, {
+        message: "Digite no mínimo 2 caracteres para o nome do usuário."
+    }),
+    userEmail: z.string()
+        .email({
+            message: 'Endereço de e-mail inválido.',
+        })
+        .regex(/@nextmail\.com$/, 'O e-mail deve ter o domínio @nextmail.com'),
+    userPassword: z.string()
+        .min(6, { message: "Digite uma senha de no mínimo 6 caracteres." })
+        .or(z.literal(''))
+        .transform(value => value === '' ? undefined : value)
+        .optional(),
+    permissionId: z.string({
+        invalid_type_error: 'Selecione uma permissão.',
+    })
+})
+
+const UpdateUser = UpdatedUserFormSchema.omit({ id: true })
+
+export async function updateUser(id: string, prevState: UserState, formData: FormData) {
+    const validatedFields = UpdateUser.safeParse({
+        userName: formData.get('userName'),
+        userEmail: formData.get('userEmail'),
+        userPassword: formData?.get('userPassword'),
+        permissionId: formData.get('userPermission'),
+    })
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Algo está errado, não foi possível editar o usuário.',
+        }
+    }
+
+    const { userName, userEmail, userPassword, permissionId } = validatedFields.data
+    const newUserPassword = userPassword && await bcrypt.hash(userPassword, 10)
+
+    try {
+        if (newUserPassword) {
+            await sql`
+                UPDATE users
+                    SET name = ${userName}, email = ${userEmail}, 
+                        password = ${newUserPassword}, permission_id = ${permissionId}
+                    WHERE id = ${id}
+            `
+        } else {
+            await sql`
+                UPDATE users
+                    SET name = ${userName}, email = ${userEmail}, 
+                        permission_id = ${permissionId}
+                    WHERE id = ${id}
+            `
+        }
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Update User.',
+        }
+    }
+
+    revalidatePath('/dashboard/usuarios')
+    redirect('/dashboard/usuarios')
 }

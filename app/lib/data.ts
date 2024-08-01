@@ -6,7 +6,9 @@ import {
   InvoiceForm,
   InvoicesTable,
   LatestInvoiceRaw,
+  PermissionField,
   Revenue,
+  UsersTable,
 } from './definitions'
 import { formatCurrency } from './utils'
 // import { revenue } from './placeholder-data'
@@ -282,5 +284,92 @@ export async function fetchCustomerById(id: string) {
   } catch (error) {
     console.error('Database Error:', error)
     throw new Error('Failed to fetch customer.')
+  }
+}
+
+export async function fetchFilteredUsers(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE
+
+  try {
+    const users = await sql<UsersTable>`
+      SELECT
+        users.id,
+        users.name,
+        users.email,
+        permissions.permission AS permission
+      FROM users
+      JOIN permissions ON users.permission_id = permissions.id
+      WHERE
+        users.name ILIKE ${`%${query}%`} OR
+        users.email ILIKE ${`%${query}%`} OR
+        permissions.permission ILIKE ${`%${query}%`}
+      ORDER BY users.name ASC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `
+
+    return users.rows
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to fetch users.')
+  }
+}
+
+export async function fetchUsersPages(query: string) {
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM users
+    WHERE
+      users.name ILIKE ${`%${query}%`} OR
+      users.email ILIKE ${`%${query}%`}
+  `
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE)
+    return totalPages
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to fetch total number of users.')
+  }
+}
+
+export async function fetchPermissions() {
+  try {
+    const data = await sql<PermissionField>`
+      SELECT
+        id,
+        permission
+      FROM permissions
+      ORDER BY permission ASC
+    `
+
+    const permissions = data.rows
+    return permissions
+  } catch (err) {
+    console.error('Database Error:', err)
+    throw new Error('Failed to fetch all users permission.')
+  }
+}
+
+export async function fetchUserById(id: string) {
+  try {
+    const data = await sql<UsersTable>`
+      SELECT
+        users.id,
+        users.name,
+        users.email,
+        permissions.permission AS permission
+      FROM users
+      JOIN permissions ON users.permission_id = permissions.id
+      WHERE users.id = ${id};
+    `
+
+    const user = data.rows[0]
+
+    return user
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to fetch user.')
   }
 }
