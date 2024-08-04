@@ -17,7 +17,7 @@ export default function Form() {
 				{/* Customer name */}
 				<div className="mb-4">
 					<label htmlFor="customerName" className="mb-2 block text-sm font-medium">
-						Digite o nome do novo cliente
+						Digite o nome do novo cliente<span className="text-red-600">*</span>
 					</label>
 					<div className="relative mt-2 rounded-md">
 						<div className="relative">
@@ -76,7 +76,7 @@ export default function Form() {
 				{/* Customer email */}
 				<div className="mb-4">
 					<label htmlFor="customerEmail" className="mb-2 block text-sm font-medium">
-						Digite o e-mail do novo cliente
+						Digite o e-mail do novo cliente<span className="text-red-600">*</span>
 					</label>
 					<div className="relative mt-2 rounded-md">
 						<div className="relative">
