@@ -8,11 +8,11 @@ import bcrypt from 'bcrypt'
 
 export const verifyAccountantUser = async (): Promise<boolean> => {
     const session = await auth()
-    
+
     if (session?.user.permission === UserRole.ACCOUNTANT) {
-      return true
-    } 
-  
+        return true
+    }
+
     return false
 }
 
@@ -125,10 +125,8 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
 }
 
 export async function deleteInvoice(id: string) {
-    // throw new Error('Failed to Delete Invoice')
-
     try {
-        await sql`DELETE FROM invoices WHERE id = ${id}`
+        await sql`DELETE FROM invoices WHERE id = ${id} AND status = 'paid'`
         revalidatePath('/dashboard/faturas')
         return { message: 'Deleted Invoice.' }
     } catch (error) {
