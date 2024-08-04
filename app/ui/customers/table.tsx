@@ -12,7 +12,7 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 		<div className="mt-6 flow-root">
 			<div className="overflow-x-auto">
 				<div className="inline-block min-w-full align-middle">
-					<div className="overflow-hidden rounded-md bg-gray-50 p-2 md:pt-0">
+					<div className="rounded-lg bg-gray-50 p-2 md:pt-0">
 						<div className="md:hidden">
 							{customers?.map((customer) => (
 								<div key={customer.id} className="mb-2 w-full rounded-md bg-white p-4">
@@ -38,12 +38,12 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 											)}
 											{(session?.user.permission === UserRole.ADMIN ||
 												session?.user.permission === UserRole.MANAGER) && (
-												<DeleteCustomer
-													id={customer.id}
-													customerName={customer.name}
-													fileName={customer.image_url}
-												/>
-											)}
+													<DeleteCustomer
+														id={customer.id}
+														customerName={customer.name}
+														fileName={customer.image_url}
+													/>
+												)}
 										</div>
 									</div>
 									<div className="flex w-full items-center justify-between border-b py-5">
@@ -120,12 +120,12 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 												)}
 												{(session?.user.permission === UserRole.ADMIN ||
 													session?.user.permission === UserRole.MANAGER) && (
-													<DeleteCustomer
-														id={customer.id}
-														customerName={customer.name}
-														fileName={customer.image_url}
-													/>
-												)}
+														<DeleteCustomer
+															id={customer.id}
+															customerName={customer.name}
+															fileName={customer.image_url}
+														/>
+													)}
 											</div>
 										</td>
 									</tr>

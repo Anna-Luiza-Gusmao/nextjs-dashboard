@@ -170,7 +170,7 @@ const CustomerFormSchema = z.object({
     }),
     customerPhoto: z
         .instanceof(File)
-        .refine((file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+        .refine((file) => ['image/jpeg', 'image/png', 'image/jpg', 'application/octet-stream'].includes(file.type), {
             message: 'Tipo de arquivo inválido. Apenas arquivos JPEG, PNG, and JPG são permitidos.',
         })
         .refine((file) => file.size <= 5 * 1024 * 1024, {
@@ -210,6 +210,23 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
 
     // Prepare data for insertion into the database
     const { customerName, customerPhoto, customerEmail } = validatedFields.data
+
+    if (customerPhoto.size === 0) {
+        try {
+            await sql`
+              INSERT INTO customers (name, email, image_url)
+              VALUES (${customerName}, ${customerEmail}, ${"/customers/default-user-image.png"})
+            `
+        } catch (error) {
+            console.error("Database Error: Failed to Create Customer. ", error)
+            return {
+                message: `Database Error: Failed to Create Customer. ${error}`,
+            }
+        } finally {
+            revalidatePath("/dashboard/clientes")
+            redirect("/dashboard/clientes")
+        }
+    }
 
     const imageFormData = new FormData()
     imageFormData.append("file", customerPhoto)
@@ -276,25 +293,7 @@ export async function deleteCustomer(id: string, fileName: string) {
     }
 }
 
-const UpdatedCustomerFormSchema = z.object({
-    id: z.string(),
-    customerName: z.string().min(2, {
-        message: "Digite no mínimo 2 caracteres para o nome do cliente."
-    }),
-    customerPhoto: z
-        .instanceof(File)
-        .refine((file) => ['image/jpeg', 'image/png', 'image/jpg', 'application/octet-stream'].includes(file.type), {
-            message: 'Tipo de arquivo inválido. Apenas arquivos JPEG, PNG, and JPG são permitidos.',
-        })
-        .refine((file) => file.size <= 5 * 1024 * 1024, {
-            message: 'O tamanho do arquivo deve ser menor que 5MB.',
-        }),
-    customerEmail: z.string().email({
-        message: 'Endereço de e-mail inválido.',
-    })
-})
-
-const UpdateCustomer = UpdatedCustomerFormSchema.omit({ id: true })
+const UpdateCustomer = CustomerFormSchema.omit({ id: true })
 
 export async function updateCustomer(id: string, oldCustomerImage: string, prevState: CustomerState, formData: FormData) {
     // Validate form fields using Zod

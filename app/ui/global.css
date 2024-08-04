@@ -16,3 +16,55 @@ input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+@layer utilities {
+  /* WebKit (Chrome, Safari) styles */
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+  }
+
+  /* Firefox scrollbar styles */
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
+  }
+
+  .scrollbar-custom::-moz-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  .scrollbar-custom::-moz-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .scrollbar-custom::-moz-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+  }
+
+  .scrollbar-custom::-moz-scrollbar-thumb:hover {
+    background: #a0a0a0;
+  }
+
+  /* Hide the scrollbar arrows (WebKit) */
+  .scrollbar-custom::-webkit-scrollbar-button {
+    display: none;
+  }
+}
