@@ -1,4 +1,5 @@
 import SideNav from "@/app/ui/dashboard/sidenav"
+import UserIdentification from "../ui/user-identification"
 
 export const experimental_ppr = true
 
@@ -8,7 +9,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			<div className="w-full flex-none md:w-64">
 				<SideNav />
 			</div>
-			<div className="flex-grow p-6 md:overflow-y-auto md:p-12">{children}</div>
+			<section className="flex flex-col w-full h-screen pt-4">
+				<div className="flex md:justify-end px-6 py-4 md:px-12 md:py-2">
+					<UserIdentification />
+				</div>
+				<div className="flex-grow px-6 py-3 md:overflow-y-auto md:px-12 md:py-6">{children}</div>
+			</section>
 		</div>
 	)
 }
