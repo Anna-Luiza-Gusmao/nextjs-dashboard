@@ -170,7 +170,7 @@ const CustomerFormSchema = z.object({
     }),
     customerPhoto: z
         .instanceof(File)
-        .refine((file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type), {
+        .refine((file) => ['image/jpeg', 'image/png', 'image/jpg', 'application/octet-stream'].includes(file.type), {
             message: 'Tipo de arquivo inválido. Apenas arquivos JPEG, PNG, and JPG são permitidos.',
         })
         .refine((file) => file.size <= 5 * 1024 * 1024, {
@@ -210,6 +210,22 @@ export async function createCustomer(prevState: CustomerState, formData: FormDat
 
     // Prepare data for insertion into the database
     const { customerName, customerPhoto, customerEmail } = validatedFields.data
+
+    if (customerPhoto.size === 0) {
+        try {
+            await sql`
+              INSERT INTO customers (name, email, image_url)
+              VALUES (${customerName}, ${customerEmail}, ${"/customers/default-user-image.png"})
+            `
+        } catch (error) {
+            console.error("Database Error: Failed to Create Customer. ", error)
+            return {
+                message: `Database Error: Failed to Create Customer. ${error}`,
+            }
+        } finally {
+            return
+        }
+    }
 
     const imageFormData = new FormData()
     imageFormData.append("file", customerPhoto)
