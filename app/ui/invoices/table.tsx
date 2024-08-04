@@ -45,6 +45,7 @@ export default async function InvoicesTable({ query, currentPage }: { query: str
 											<DeleteInvoice
 												id={invoice.id}
 												customerName={invoice.name}
+												status={invoice.status}
 												invoiceValue={invoice.amount}
 											/>
 										)}
@@ -108,6 +109,7 @@ export default async function InvoicesTable({ query, currentPage }: { query: str
 												<DeleteInvoice
 													id={invoice.id}
 													customerName={invoice.name}
+													status={invoice.status}
 													invoiceValue={invoice.amount}
 												/>
 											)}

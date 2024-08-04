@@ -6,6 +6,7 @@ import { deleteInvoice } from "@/app/lib/actions"
 import DeleteModal from "../delete-modal"
 import { useState } from "react"
 import { formatCurrency } from "@/app/lib/utils"
+import clsx from "clsx"
 
 export function CreateInvoice() {
 	return (
@@ -26,7 +27,17 @@ export function UpdateInvoice({ id }: { id: string }) {
 	)
 }
 
-export function DeleteInvoice({ id, customerName, invoiceValue }: { id: string; customerName: string; invoiceValue: number }) {
+export function DeleteInvoice({
+	id,
+	customerName,
+	status,
+	invoiceValue
+}: {
+	id: string
+	customerName: string
+	status: string
+	invoiceValue: number
+}) {
 	const deleteInvoiceWithId = deleteInvoice.bind(null, id)
 	const [openDeleteCustomer, setOpenDeleteCustomer] = useState(false)
 
@@ -36,9 +47,14 @@ export function DeleteInvoice({ id, customerName, invoiceValue }: { id: string; 
 
 	return (
 		<>
-			<button type="button" className="rounded-md border p-2 hover:bg-gray-100" onClick={handleOpenDeleteModal}>
+			<button
+				type="button"
+				className="rounded-md border p-2 enabled:hover:bg-gray-100 disabled:cursor-not-allowed"
+				disabled={status !== "paid"}
+				onClick={handleOpenDeleteModal}
+			>
 				<span className="sr-only">Deletar</span>
-				<TrashIcon className="w-4" />
+				<TrashIcon className={clsx("w-4", status !== "paid" && "text-gray-400")} />
 			</button>
 			{openDeleteCustomer &&
 				DeleteModal({
