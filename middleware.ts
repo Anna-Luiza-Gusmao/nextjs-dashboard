@@ -19,7 +19,8 @@ export async function middleware(request: NextRequest) {
 
     // Use JWT token in all request headers
     const authorizationHeader = `Bearer ${accessToken}`
-    request.headers.set('Authorization', authorizationHeader)
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set('Authorization', authorizationHeader)
 
     const currentPath = request.nextUrl.pathname
     const userRole = token.permission as UserRole
