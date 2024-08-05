@@ -4,6 +4,7 @@ import LatestInvoices from "@/app/ui/dashboard/latest-invoices"
 import { inter } from "@/app/ui/fonts"
 import { Suspense } from "react"
 import { RevenueChartSkeleton, CardsSkeleton } from "@/app/ui/dashboard/skeletons"
+import { AreaChartHero } from "@/app/ui/dashboard/chart"
 
 export default async function Page() {
 	return (
@@ -15,13 +16,15 @@ export default async function Page() {
 				</Suspense>
 			</div>
 			<div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-				<Suspense fallback={<RevenueChartSkeleton />}>
+				{/* <Suspense fallback={<RevenueChartSkeleton />}>
 					<RevenueChart />
-				</Suspense>
+				</Suspense> */}
+				
 				<Suspense fallback={<RevenueChartSkeleton />}>
 					<LatestInvoices />
 				</Suspense>
 			</div>
+			<AreaChartHero />
 		</main>
 	)
 }
