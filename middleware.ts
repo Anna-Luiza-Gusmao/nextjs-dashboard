@@ -10,11 +10,16 @@ const secret = process.env.NEXTAUTH_SECRET as string
 
 export async function middleware(request: NextRequest) {
     const token = await getToken({ req: request, secret, salt: "authjs.session-token" })
+    const accessToken = await getToken({ req: request, secret, salt: "authjs.session-token", raw: true })
 
     // Check if the user is authenticated
-    if (!token) {
+    if (!token || !accessToken) {
         return NextResponse.redirect(new URL("/login", request.url))
     }
+
+    // Use JWT token in all request headers
+    const authorizationHeader = `Bearer ${accessToken}`
+    request.headers.set('Authorization', authorizationHeader)
 
     const currentPath = request.nextUrl.pathname
     const userRole = token.permission as UserRole
