@@ -373,3 +373,20 @@ export async function fetchUserById(id: string) {
     throw new Error('Failed to fetch user.')
   }
 }
+
+export async function fecthInvoicesPendingForCustomer(id: string) {
+  try {
+    const result = await sql`
+      SELECT COUNT(*) > 0 AS has_pending
+      FROM invoices
+      WHERE customer_id = ${id} AND status = 'pending'
+    `;
+
+    const hasInvoicesPending = result.rows[0].has_pending as boolean
+
+    return hasInvoicesPending
+  } catch (error) {
+    console.error('Database Error:', error)
+    throw new Error('Failed to fetch invoice status for this customer.')
+  }
+}

@@ -5,6 +5,7 @@ import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
 import DeleteModal from "../delete-modal"
 import { useState } from "react"
+import Alert from "../alert"
 
 export function CreateCustomer() {
 	return (
@@ -17,12 +18,30 @@ export function CreateCustomer() {
 	)
 }
 
-export function DeleteCustomer({ id, customerName, fileName }: { id: string; customerName: string; fileName: string }) {
+export function DeleteCustomer({
+	id,
+	customerName,
+	fileName,
+	verifyInvoicesPending
+}: {
+	id: string
+	customerName: string
+	fileName: string
+	verifyInvoicesPending: Promise<boolean>
+}) {
 	const deleteCustomerWithId = deleteCustomer.bind(null, id, fileName)
 	const [openDeleteCustomer, setOpenDeleteCustomer] = useState(false)
+	const [hasInvoicesPending, setHasInvoicesPending] = useState(false)
 
-	const handleOpenDeleteModal = () => {
-		setOpenDeleteCustomer(true)
+	const handleOpenDeleteModal = async () => {
+		verifyInvoicesPending
+			.then((hasInvoicesPending) => {
+				if (hasInvoicesPending) {
+					return setHasInvoicesPending(true)
+				}
+
+				setOpenDeleteCustomer(true)
+			})
 	}
 
 	return (
@@ -42,6 +61,11 @@ export function DeleteCustomer({ id, customerName, fileName }: { id: string; cus
 				setOpenDeleteModal: setOpenDeleteCustomer,
 				deleteAction: deleteCustomerWithId
 			})}
+			{hasInvoicesPending && <Alert
+				title="Ops... Não foi possível excluir o cliente!"
+				message="Clientes com faturas pendentes não podem ser excluídos."
+				handleClose={setHasInvoicesPending}
+			/>}
 		</>
 	)
 }

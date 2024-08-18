@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { fetchFilteredCustomers } from "@/app/lib/data"
+import { fecthInvoicesPendingForCustomer, fetchFilteredCustomers } from "@/app/lib/data"
 import { DeleteCustomer, UpdateCustomer } from "./buttons"
 import { auth } from "@/auth/auth"
 import { UserRole } from "@/auth/permissions"
@@ -7,6 +7,12 @@ import { UserRole } from "@/auth/permissions"
 export default async function CustomersTable({ query, currentPage }: { query: string; currentPage: number }) {
 	const customers = await fetchFilteredCustomers(query, currentPage)
 	const session = await auth()
+
+	const verifyInvoicesPending = async (id: string) => {
+		const hasInvoicesPending = await fecthInvoicesPendingForCustomer(id)
+
+		return hasInvoicesPending
+	}
 
 	return (
 		<div className="mt-6 flow-root">
@@ -42,6 +48,7 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 														id={customer.id}
 														customerName={customer.name}
 														fileName={customer.image_url}
+														verifyInvoicesPending={verifyInvoicesPending(customer.id)}
 													/>
 												)}
 										</div>
@@ -124,6 +131,7 @@ export default async function CustomersTable({ query, currentPage }: { query: st
 															id={customer.id}
 															customerName={customer.name}
 															fileName={customer.image_url}
+															verifyInvoicesPending={verifyInvoicesPending(customer.id)}
 														/>
 													)}
 											</div>

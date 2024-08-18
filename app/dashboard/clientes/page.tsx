@@ -11,7 +11,7 @@ import { auth } from "@/auth/auth"
 import { UserRole } from "@/auth/permissions"
 
 export const metadata: Metadata = {
-	title: "Customers"
+	title: "Clientes"
 }
 
 export default async function Page({
