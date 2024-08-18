@@ -2,6 +2,7 @@ import { fetchFilteredUsers } from "@/app/lib/data"
 import { DeleteUser, UpdateUser } from "./buttons"
 import { auth } from "@/auth/auth"
 import { UserRole } from "@/auth/permissions"
+import UserInitials from "../user-initials"
 
 export default async function UsersTable({ query, currentPage }: { query: string; currentPage: number }) {
 	const users = await fetchFilteredUsers(query, currentPage)
@@ -19,6 +20,7 @@ export default async function UsersTable({ query, currentPage }: { query: string
 										<div>
 											<div className="mb-2 flex items-center">
 												<div className="flex items-center gap-3">
+													<UserInitials userName={user.name} className="w-9 h-9 bg-gray-300 text-base" />
 													<p>{user.name}</p>
 												</div>
 											</div>
@@ -65,6 +67,7 @@ export default async function UsersTable({ query, currentPage }: { query: string
 									<tr key={user.id} className="group">
 										<td className="whitespace-nowrap bg-white py-5 pl-4 pr-3 text-sm text-black group-first-of-type:rounded-md group-last-of-type:rounded-md sm:pl-6">
 											<div className="flex items-center gap-3">
+												<UserInitials userName={user.name} className="w-9 h-9 bg-gray-300 text-base" />
 												<p>{user.name}</p>
 											</div>
 										</td>

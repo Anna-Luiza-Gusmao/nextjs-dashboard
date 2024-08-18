@@ -1,4 +1,5 @@
 import { auth } from "@/auth/auth"
+import UserInitials from "./user-initials"
 
 export default async function UserIdentification() {
     const session = await auth()
@@ -17,23 +18,9 @@ export default async function UserIdentification() {
         }
     }
 
-    const userInitials = (userName: string) => {
-        const userInitials = userName
-            .split(' ')
-            .map((part: string) => part[0])
-            .join('')
-            .toUpperCase()
-
-        return (
-            <div className="flex items-center justify-center w-12 h-12 bg-violet-400 rounded-full text-white text-xl font-medium">
-                <span>{userInitials}</span>
-            </div>
-        )
-    }
-
     return (
         <section className="flex items-center gap-4 min-w-40">
-            {userInitials(userName)}
+            <UserInitials userName={userName} className="w-12 h-12 bg-violet-400 text-xl" />
             <div>
                 <p>{userName}</p>
                 <p className="text-sm text-gray-500">{userPermission()}</p>
